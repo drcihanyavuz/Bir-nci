@@ -1,0 +1,603 @@
+/* ============================================================
+   BirİNCİ — Tema: "Derin deniz inci avı"
+   ============================================================ */
+
+:root {
+  /* Renkler */
+  --bg-deep: #0e1b2b;
+  --bg-surface: #16283d;
+  --bg-surface-raised: #1e344d;
+  --border-subtle: #2a4054;
+
+  --pearl: #f0e6d2;
+  --pearl-dim: #a9b7c6;
+  --pearl-faint: #6f8195;
+
+  --gold: #d4af37;
+  --gold-deep: #a9822a;
+  --gold-glow: rgba(212, 175, 55, 0.35);
+
+  --coral: #e2574c;
+  --coral-deep: #b5352c;
+
+  --seafoam: #4fa98c;
+  --seafoam-deep: #357a63;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, #142438 0%, var(--bg-deep) 60%);
+  background-attachment: fixed;
+  color: var(--pearl);
+  font-family: 'Manrope', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.25rem;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+p {
+  color: var(--pearl-dim);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: 'Manrope', system-ui, sans-serif;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ---- Sayfa iskeleti ---- */
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.page-wide {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.wordmark {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--pearl);
+}
+
+.wordmark em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+/* ---- Üst bar ---- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--pearl-dim);
+}
+
+.balance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--gold);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+/* ---- Formlar ---- */
+
+.form-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  color: var(--pearl-dim);
+  font-size: 0.9rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--pearl);
+  font-size: 1rem;
+  padding: 0.5rem 0.1rem;
+  font-family: inherit;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-bottom-color: var(--gold);
+  outline: none;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+
+/* ---- Butonlar ---- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #17222d;
+}
+
+.btn-primary:hover {
+  background: #e3c25c;
+}
+
+.btn-primary:disabled {
+  background: var(--pearl-faint);
+  color: var(--bg-deep);
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--pearl-dim);
+}
+
+.btn-ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ---- Liste satırları (ana sayfa yarışma listesi) ---- */
+
+.list-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.list-row:first-child {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.list-row-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  color: var(--pearl);
+}
+
+.list-row-meta {
+  font-size: 0.85rem;
+  color: var(--pearl-dim);
+}
+
+.empty-state {
+  color: var(--pearl-dim);
+  padding: 2rem 0;
+  text-align: center;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+/* ---- Yarışma sahnesi ---- */
+
+.stage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.stage-countdown {
+  font-family: 'Fraunces', serif;
+  font-size: 4.5rem;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+  text-shadow: 0 0 30px var(--gold-glow);
+}
+
+.stage-countdown.is-urgent {
+  color: var(--coral);
+  text-shadow: 0 0 30px rgba(226, 87, 76, 0.4);
+}
+
+.stage-question {
+  font-family: 'Fraunces', serif;
+  font-size: 1.75rem;
+  max-width: 32rem;
+  margin: 1.5rem 0 2.5rem;
+  color: var(--pearl);
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 34rem;
+}
+
+@media (max-width: 480px) {
+  .option-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.option-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--pearl);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1rem;
+  font-size: 1rem;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--gold);
+  background: var(--bg-surface-raised);
+}
+
+.option-btn:disabled {
+  cursor: default;
+}
+
+.option-btn.is-selected {
+  border-color: var(--gold);
+  background: var(--bg-surface-raised);
+}
+
+.option-letter {
+  color: var(--gold);
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.status-banner {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--pearl-dim);
+}
+
+.status-banner.is-error {
+  color: var(--coral);
+}
+
+.status-banner.is-success {
+  color: var(--seafoam);
+}
+
+/* ---- Genel yardımcılar ---- */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.muted {
+  color: var(--pearl-dim);
+  font-size: 0.9rem;
+}
+
+.gold-text {
+  color: var(--gold);
+}
+
+/* ---- Uygulama üst çerçevesi (her sayfada) ---- */
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--pearl);
+  font-weight: 600;
+}
+
+.home-link:hover {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.user-chip {
+  color: var(--pearl);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ---- Açılış sayfası ---- */
+
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.landing-wordmark {
+  font-size: 2.75rem;
+}
+
+.landing-tagline {
+  margin-top: 0.5rem;
+  max-width: 26rem;
+}
+
+.countdown-block {
+  margin: 2.5rem 0;
+  padding: 1.5rem 2rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+
+.countdown-block .stage-countdown {
+  font-size: 2.75rem;
+}
+
+.landing-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 30rem;
+}
+
+@media (max-width: 480px) {
+  .landing-buttons {
+    grid-template-columns: 1fr;
+  }
+}
+
+.landing-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1rem;
+  color: var(--pearl);
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  transition: border-color 0.15s ease, transform 0.12s ease;
+}
+
+.landing-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+/* ---- Panel (dashboard) büyük butonlar ---- */
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 34rem;
+  margin: 2rem auto 0;
+}
+
+@media (max-width: 480px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2rem 1rem;
+  color: var(--pearl);
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  transition: border-color 0.15s ease, transform 0.12s ease;
+  text-align: center;
+}
+
+.panel-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+/* ---- Sonuç tablosu ---- */
+
+.results-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.rank-badge {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  color: var(--gold);
+  width: 2rem;
+  text-align: center;
+}
+
+/* ---- Sohbet ---- */
+
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 50vh;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.chat-bubble {
+  max-width: 75%;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.chat-bubble.is-mine {
+  align-self: flex-end;
+  background: var(--gold);
+  color: #17222d;
+}
+
+.chat-bubble.is-theirs {
+  align-self: flex-start;
+  background: var(--bg-surface-raised);
+  color: var(--pearl);
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.chat-input-row input {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  color: var(--pearl);
+  font-family: inherit;
+}
+
+.chat-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.chat-thread-item {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  color: var(--pearl);
+  background: var(--bg-surface);
+}
+
+.chat-thread-item:hover {
+  border-color: var(--gold);
+}
+
+.chat-thread-item.is-active {
+  border-color: var(--gold);
+  background: var(--bg-surface-raised);
+}
