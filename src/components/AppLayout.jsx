@@ -12,7 +12,14 @@ export default function AppLayout({ children }) {
         <Link to="/" className="home-link">
           ⌂ Anasayfa
         </Link>
-        {user && <span className="user-chip">{profile?.full_name ?? ''}</span>}
+        {user && (
+          <span className="user-chip" style={{ textAlign: 'right' }}>
+            <div>{profile?.full_name ?? ''}</div>
+            <div className="muted" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
+              Hazine : {profile?.inci_balance ?? '...'}
+            </div>
+          </span>
+        )}
       </div>
       {children}
     </div>
