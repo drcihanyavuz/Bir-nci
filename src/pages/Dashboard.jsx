@@ -21,6 +21,9 @@ export default function Dashboard() {
         <Link to="/buy-inci" className="panel-btn">
           İnci al
         </Link>
+        <Link to="/survey" className="panel-btn">
+          Anket
+        </Link>
         <Link to="/chat" className="panel-btn">
           Sohbet
         </Link>

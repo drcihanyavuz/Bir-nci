@@ -15,11 +15,13 @@ import JoinCompetition from './pages/JoinCompetition';
 import CompetitionRoom from './pages/CompetitionRoom';
 import BuyInci from './pages/BuyInci';
 import Chat from './pages/Chat';
+import Survey from './pages/Survey';
 
 import NewCompetition from './pages/admin/NewCompetition';
 import AddQuestions from './pages/admin/AddQuestions';
 import AdminTiebreak from './pages/admin/AdminTiebreak';
 import AdminChat from './pages/admin/AdminChat';
+import AdminSurvey from './pages/admin/AdminSurvey';
 
 export default function App() {
   return (
@@ -83,6 +85,14 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/survey"
+              element={
+                <ProtectedRoute>
+                  <Survey />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Sadece admin */}
             <Route
@@ -121,6 +131,16 @@ export default function App() {
                 <ProtectedRoute>
                   <AdminRoute>
                     <AdminChat />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/survey"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminSurvey />
                   </AdminRoute>
                 </ProtectedRoute>
               }
