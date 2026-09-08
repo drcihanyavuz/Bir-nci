@@ -640,6 +640,106 @@ textarea:focus-visible {
   50% { transform: scale(0.75); opacity: 0.3; }
 }
 
+/* ---- Yarışma odası: üst çubuk (soru no / aktif sayı / geri sayım) ---- */
+
+.room-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto 1rem;
+  padding: 0 0.5rem;
+}
+
+.room-topbar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Fraunces', serif;
+  color: var(--pearl);
+}
+
+.room-topbar-item .label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.7rem;
+  color: var(--pearl-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.room-topbar-item .value {
+  font-size: 1.3rem;
+}
+
+.room-topbar-item.countdown .value {
+  color: var(--gold);
+}
+
+.room-topbar-item.countdown.is-urgent .value {
+  color: var(--coral);
+}
+
+.room-media {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 10px;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
+.room-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  width: 100%;
+  max-width: 30rem;
+}
+
+/* ---- Soru sonucu açıklama (reveal) ---- */
+
+.reveal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.reveal-row.is-correct {
+  border-color: var(--seafoam);
+}
+
+.reveal-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-surface-raised);
+  transform-origin: left;
+  transition: width 0.6s ease-out;
+  z-index: 0;
+}
+
+.reveal-row.is-correct .reveal-fill {
+  background: rgba(79, 169, 140, 0.35);
+}
+
+.reveal-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.reveal-row.is-correct .option-letter {
+  color: var(--seafoam);
+}
+
 .mascot-bubble {
   margin-top: 1rem;
   max-width: 22rem;

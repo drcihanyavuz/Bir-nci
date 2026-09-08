@@ -132,12 +132,16 @@ export default function AddQuestions() {
         </label>
 
         <label className="field">
-          Görsel (opsiyonel)
-          <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} />
+          Görsel veya video (opsiyonel)
+          <input type="file" accept="image/*,video/*" onChange={handleImageUpload} disabled={uploadingImage} />
         </label>
         {uploadingImage && <p className="muted">Yükleniyor...</p>}
-        {form.image_url && (
-          <img src={form.image_url} alt="Soru görseli" style={{ maxWidth: '200px', borderRadius: '8px' }} />
+        {form.image_url && /\.(mp4|webm|mov|ogg)/i.test(form.image_url) ? (
+          <video src={form.image_url} style={{ maxWidth: '200px', borderRadius: '8px' }} controls />
+        ) : (
+          form.image_url && (
+            <img src={form.image_url} alt="Soru görseli" style={{ maxWidth: '200px', borderRadius: '8px' }} />
+          )
         )}
 
         <label className="field">
