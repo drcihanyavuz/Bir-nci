@@ -12,8 +12,31 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMessage, setForgotMessage] = useState('');
+  const [sendingReset, setSendingReset] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setForgotMessage('');
+    setSendingReset(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    setSendingReset(false);
+
+    if (error) {
+      setForgotMessage(error.message);
+      return;
+    }
+
+    setForgotMessage('Şifre sıfırlama bağlantısı e-postanıza gönderildi.');
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem(REMEMBER_KEY);
@@ -121,6 +144,34 @@ export default function Login() {
         <p className="muted" style={{ textAlign: 'center' }}>
           Hesabın yok mu? <Link to="/signup">Kayıt ol</Link>
         </p>
+
+        <p className="muted" style={{ textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={() => setShowForgot((v) => !v)}
+            style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', padding: 0, font: 'inherit' }}
+          >
+            Şifremi unuttum
+          </button>
+        </p>
+
+        {showForgot && (
+          <div className="stack" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '1rem' }}>
+            <label className="field">
+              E-posta
+              <input
+                type="email"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                placeholder="Kayıtlı e-postanız"
+              />
+            </label>
+            <button className="btn btn-ghost" onClick={handleForgotSubmit} disabled={sendingReset}>
+              {sendingReset ? 'Gönderiliyor...' : 'Sıfırlama bağlantısı gönder'}
+            </button>
+            {forgotMessage && <p className="muted">{forgotMessage}</p>}
+          </div>
+        )}
       </form>
     </div>
   );

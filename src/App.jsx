@@ -7,6 +7,7 @@ import AppLayout from './components/AppLayout';
 import PublicLanding from './pages/PublicLanding';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ResetPassword from './pages/ResetPassword';
 import PublicResults from './pages/PublicResults';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/" element={<PublicLanding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/results" element={<PublicResults />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/kvkk" element={<Kvkk />} />
