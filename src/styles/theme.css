@@ -4,24 +4,27 @@
 
 :root {
   /* Renkler */
-  --bg-deep: #0e1b2b;
-  --bg-surface: #16283d;
-  --bg-surface-raised: #1e344d;
-  --border-subtle: #2a4054;
+  --bg-deep: #f5c518;
+  --bg-surface: #1d4ed8;
+  --bg-surface-raised: #2f5fee;
+  --border-subtle: #163ea8;
 
-  --pearl: #f0e6d2;
-  --pearl-dim: #a9b7c6;
-  --pearl-faint: #6f8195;
+  --pearl: #ffffff;
+  --pearl-dim: #d7e2ff;
+  --pearl-faint: #9db3e8;
 
-  --gold: #d4af37;
-  --gold-deep: #a9822a;
-  --gold-glow: rgba(212, 175, 55, 0.35);
+  --gold: #ffd500;
+  --gold-deep: #e0b800;
+  --gold-glow: rgba(255, 213, 0, 0.35);
 
   --coral: #e2574c;
   --coral-deep: #b5352c;
 
   --seafoam: #4fa98c;
   --seafoam-deep: #357a63;
+
+  --btn-blue: #2563eb;
+  --btn-blue-hover: #1d4fc7;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -212,12 +215,12 @@ textarea:focus-visible {
 }
 
 .btn-primary {
-  background: var(--gold);
-  color: #17222d;
+  background: var(--btn-blue);
+  color: var(--pearl);
 }
 
 .btn-primary:hover {
-  background: #e3c25c;
+  background: var(--btn-blue-hover);
 }
 
 .btn-primary:disabled {
