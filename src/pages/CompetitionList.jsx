@@ -40,12 +40,8 @@ export default function CompetitionList() {
       </div>
 
       {profile?.is_admin && (
-        <p style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
-          <Link to="/admin/competitions/new">Admin paneli</Link>
-          <Link to="/admin/tiebreak">Ek soru bekleyenler</Link>
-          <Link to="/admin/chat">Mesajlar</Link>
-          <Link to="/admin/survey">Anket yönetimi</Link>
-          <Link to="/admin/packages">İnci paketleri</Link>
+        <p style={{ marginTop: '1rem' }}>
+          <Link to="/admin">Admin paneline dön</Link>
         </p>
       )}
 

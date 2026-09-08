@@ -63,7 +63,7 @@ export default function Login() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('phone')
+      .select('phone, is_admin')
       .eq('id', data.user.id)
       .single();
 
@@ -81,7 +81,7 @@ export default function Login() {
       localStorage.removeItem(REMEMBER_KEY);
     }
 
-    navigate('/dashboard');
+    navigate(profile?.is_admin ? '/admin' : '/dashboard');
   };
 
   return (

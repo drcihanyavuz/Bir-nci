@@ -26,6 +26,9 @@ import AdminTiebreak from './pages/admin/AdminTiebreak';
 import AdminChat from './pages/admin/AdminChat';
 import AdminSurvey from './pages/admin/AdminSurvey';
 import AdminPackages from './pages/admin/AdminPackages';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminContactMessages from './pages/admin/AdminContactMessages';
+import AdminPastCompetitions from './pages/admin/AdminPastCompetitions';
 
 export default function App() {
   return (
@@ -102,6 +105,36 @@ export default function App() {
             />
 
             {/* Sadece admin */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/contact-messages"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminContactMessages />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/past-competitions"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminPastCompetitions />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/admin/competitions/new"
               element={

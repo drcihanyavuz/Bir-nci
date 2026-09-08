@@ -39,9 +39,16 @@ export default function PublicLanding() {
   const countdown = useCountdown(nextCompetition?.start_time);
 
   useEffect(() => {
-    if (!loading && user) {
-      navigate('/dashboard');
-    }
+    if (loading || !user) return;
+
+    supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        navigate(data?.is_admin ? '/admin' : '/dashboard');
+      });
   }, [loading, user, navigate]);
 
   useEffect(() => {
