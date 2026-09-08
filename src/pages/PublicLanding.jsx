@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
+import Mascot from '../components/Mascot';
 
 function useCountdown(targetDate) {
   const [remaining, setRemaining] = useState(null);
@@ -57,6 +58,7 @@ export default function PublicLanding() {
 
   return (
     <div className="landing">
+      <Mascot />
       <div className="wordmark landing-wordmark">
         Bir<em>İNCİ</em>
       </div>

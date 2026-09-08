@@ -601,3 +601,45 @@ textarea:focus-visible {
   border-color: var(--gold);
   background: var(--bg-surface-raised);
 }
+
+/* ---- Maskot (İnci Boncuk) ---- */
+
+.mascot-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.mascot-image {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 24px var(--gold-glow);
+  animation: mascot-bob 2.4s ease-in-out infinite;
+}
+
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+.mascot-bubble {
+  margin-top: 1rem;
+  max-width: 22rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.1rem;
+  font-size: 0.9rem;
+  color: var(--pearl);
+  text-align: center;
+  animation: mascot-bubble-in 0.35s ease-out;
+}
+
+@keyframes mascot-bubble-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
