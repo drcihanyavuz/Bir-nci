@@ -609,21 +609,35 @@ textarea:focus-visible {
   flex-direction: column;
   align-items: center;
   margin-bottom: 1.5rem;
+  perspective: 900px;
 }
 
 .mascot-image {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid var(--gold);
-  box-shadow: 0 0 24px var(--gold-glow);
-  animation: mascot-bob 2.4s ease-in-out infinite;
+  width: 160px;
+  height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 20px var(--gold-glow));
+  animation: mascot-float 3.2s ease-in-out infinite;
+  transform-style: preserve-3d;
 }
 
-@keyframes mascot-bob {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
+.mascot-shadow {
+  width: 90px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.35), transparent 70%);
+  margin-top: -6px;
+  animation: mascot-shadow-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes mascot-float {
+  0%, 100% { transform: translateY(0) rotateY(-8deg) rotateZ(-1.5deg); }
+  50% { transform: translateY(-14px) rotateY(8deg) rotateZ(1.5deg); }
+}
+
+@keyframes mascot-shadow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(0.75); opacity: 0.3; }
 }
 
 .mascot-bubble {

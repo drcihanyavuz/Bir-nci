@@ -23,8 +23,9 @@ export default function Mascot() {
 
         const utterance = new SpeechSynthesisUtterance(WELCOME_TEXT);
         utterance.lang = 'tr-TR';
-        utterance.pitch = 1.6; // daha tiz, daha "tatlı" bir ton
-        utterance.rate = 0.95; // hafif yavaş, daha sıcak bir okuma
+        utterance.pitch = 1.9; // daha ince, çocuksu bir ton
+        utterance.rate = 0.85; // daha yavaş, nazik bir okuma
+        utterance.volume = 0.9;
 
         const voices = window.speechSynthesis.getVoices();
         const turkishVoice =
@@ -48,6 +49,7 @@ export default function Mascot() {
   return (
     <div className="mascot-wrap">
       <img src="/mascot/inci-boncuk.jpeg" alt="İnci Boncuk" className="mascot-image" />
+      <div className="mascot-shadow" />
       {showBubble && (
         <div className="mascot-bubble">
           Aramıza hoşgeldiniz! Ben İnci Boncuk, bu yarışmanın sunucusuyum. Haydi yarışalım ve
