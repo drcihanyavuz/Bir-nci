@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const WELCOME_TEXT =
-  'Aramıza hoşgeldiniz. Seni gördüğüme çok sevindim. Ben İnci Boncuk. Bu yarışmanın sunucusuyum. Haydi yarışalım ve kazanalım.';
+  'Merhaba hoşgeldiniz, ben İnci Boncuk. Bu yarışmada sana destek olacağım. Hazırsan eğer haydi yarışalım ve kazanalım.';
 
 const GREETED_KEY = 'birinci_mascot_greeted';
 
@@ -23,8 +23,8 @@ export default function Mascot() {
 
         const utterance = new SpeechSynthesisUtterance(WELCOME_TEXT);
         utterance.lang = 'tr-TR';
-        utterance.pitch = 1.9; // daha ince, çocuksu bir ton
-        utterance.rate = 0.85; // daha yavaş, nazik bir okuma
+        utterance.pitch = 2.0; // Web Speech API'nin izin verdiği en ince ton
+        utterance.rate = 0.85;
         utterance.volume = 0.9;
 
         const voices = window.speechSynthesis.getVoices();
@@ -48,12 +48,12 @@ export default function Mascot() {
 
   return (
     <div className="mascot-wrap">
-      <img src="/mascot/inci-boncuk.jpeg" alt="İnci Boncuk" className="mascot-image" />
+      <img src="/mascot/inci-boncuk-nobg.png" alt="İnci Boncuk" className="mascot-image" />
       <div className="mascot-shadow" />
       {showBubble && (
         <div className="mascot-bubble">
-          Aramıza hoşgeldiniz! Ben İnci Boncuk, bu yarışmanın sunucusuyum. Haydi yarışalım ve
-          kazanalım! ✨
+          Merhaba hoşgeldiniz! Ben İnci Boncuk, bu yarışmada sana destek olacağım. Hazırsan
+          haydi yarışalım ve kazanalım! ✨
         </div>
       )}
     </div>
