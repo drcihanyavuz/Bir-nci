@@ -69,9 +69,6 @@ export default function PublicLanding() {
       <div className="wordmark landing-wordmark">
         Bir<em>İNCİ</em>
       </div>
-      <p className="muted landing-tagline">
-        Canlı bilgi yarışmasında bilginizi konuşturun, birinci olun.
-      </p>
 
       <div className="countdown-block">
         {nextCompetition ? (
@@ -94,6 +91,9 @@ export default function PublicLanding() {
         </Link>
         <Link to="/signup" className="landing-btn">
           Üye ol
+        </Link>
+        <Link to="/yarismayi-ogrenelim" className="landing-btn">
+          Yarışmayı Öğrenelim
         </Link>
         <Link to="/results" className="landing-btn">
           Yarışma sonuçları
