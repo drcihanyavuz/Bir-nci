@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+const APP_URL = 'https://birincim.vercel.app';
+
 export default function Dashboard() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
@@ -8,6 +10,21 @@ export default function Dashboard() {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleInvite = async () => {
+    const shareText = `BirİNCİ'de canlı bilgi yarışmasına katıl, birinci ol! ${APP_URL}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: shareText, url: APP_URL });
+      } catch {
+        // kullanıcı paylaşımı iptal etti, bir şey yapmaya gerek yok
+      }
+    } else {
+      // Web Share API desteklenmiyorsa WhatsApp'a doğrudan yönlendir
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+    }
   };
 
   return (
@@ -27,6 +44,9 @@ export default function Dashboard() {
         <Link to="/chat" className="panel-btn">
           Sohbet
         </Link>
+        <button className="panel-btn" onClick={handleInvite}>
+          Davet et
+        </button>
         <button className="panel-btn" onClick={handleSignOut}>
           Çıkış
         </button>

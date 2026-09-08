@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 
 const emptyQuestion = {
   text: '',
+  image_url: '',
   option_a: '',
   option_b: '',
   option_c: '',
@@ -20,6 +21,26 @@ export default function AddQuestions() {
   const [submitting, setSubmitting] = useState(false);
   const [starting, setStarting] = useState(false);
   const [startMessage, setStartMessage] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage.from('question-images').upload(fileName, file);
+
+    if (!error) {
+      const { data } = supabase.storage.from('question-images').getPublicUrl(fileName);
+      setForm((prev) => ({ ...prev, image_url: data.publicUrl }));
+    } else {
+      setError(error.message);
+    }
+
+    setUploadingImage(false);
+  };
 
   const loadQuestions = async () => {
     const { data } = await supabase
@@ -48,6 +69,7 @@ export default function AddQuestions() {
       competition_id: competitionId,
       order_index: nextOrderIndex,
       text: form.text,
+      image_url: form.image_url || null,
       option_a: form.option_a,
       option_b: form.option_b,
       option_c: form.option_c,
@@ -108,6 +130,15 @@ export default function AddQuestions() {
           Soru metni
           <textarea value={form.text} onChange={handleChange('text')} required />
         </label>
+
+        <label className="field">
+          Görsel (opsiyonel)
+          <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} />
+        </label>
+        {uploadingImage && <p className="muted">Yükleniyor...</p>}
+        {form.image_url && (
+          <img src={form.image_url} alt="Soru görseli" style={{ maxWidth: '200px', borderRadius: '8px' }} />
+        )}
 
         <label className="field">
           A şıkkı

@@ -45,6 +45,7 @@ export default function CompetitionList() {
           <Link to="/admin/tiebreak">Ek soru bekleyenler</Link>
           <Link to="/admin/chat">Mesajlar</Link>
           <Link to="/admin/survey">Anket yönetimi</Link>
+          <Link to="/admin/packages">İnci paketleri</Link>
         </p>
       )}
 

@@ -1,16 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
+
+const REMEMBER_KEY = 'birinci_remember_login';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const { signIn } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const saved = localStorage.getItem(REMEMBER_KEY);
+    if (saved) {
+      const { email: savedEmail, phone: savedPhone } = JSON.parse(saved);
+      setEmail(savedEmail ?? '');
+      setPhone(savedPhone ?? '');
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +38,6 @@ export default function Login() {
       return;
     }
 
-    // Telefon numarasını da doğrula
     const { data: profile } = await supabase
       .from('profiles')
       .select('phone')
@@ -38,6 +50,12 @@ export default function Login() {
       await supabase.auth.signOut();
       setError('Telefon numarası kayıtlı bilgilerinizle uyuşmuyor.');
       return;
+    }
+
+    if (rememberMe) {
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ email, phone }));
+    } else {
+      localStorage.removeItem(REMEMBER_KEY);
     }
 
     navigate('/dashboard');
@@ -83,6 +101,15 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </label>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem' }} className="muted">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          Beni hatırla
         </label>
 
         {error && <p className="status-banner is-error">{error}</p>}

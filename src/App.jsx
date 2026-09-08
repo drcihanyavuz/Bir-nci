@@ -16,12 +16,15 @@ import CompetitionRoom from './pages/CompetitionRoom';
 import BuyInci from './pages/BuyInci';
 import Chat from './pages/Chat';
 import Survey from './pages/Survey';
+import Kvkk from './pages/Kvkk';
+import Terms from './pages/Terms';
 
 import NewCompetition from './pages/admin/NewCompetition';
 import AddQuestions from './pages/admin/AddQuestions';
 import AdminTiebreak from './pages/admin/AdminTiebreak';
 import AdminChat from './pages/admin/AdminChat';
 import AdminSurvey from './pages/admin/AdminSurvey';
+import AdminPackages from './pages/admin/AdminPackages';
 
 export default function App() {
   return (
@@ -35,6 +38,8 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/results" element={<PublicResults />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/kvkk" element={<Kvkk />} />
+            <Route path="/kullanim-kosullari" element={<Terms />} />
 
             {/* Giriş yapmış üyeler */}
             <Route
@@ -141,6 +146,16 @@ export default function App() {
                 <ProtectedRoute>
                   <AdminRoute>
                     <AdminSurvey />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/packages"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminPackages />
                   </AdminRoute>
                 </ProtectedRoute>
               }

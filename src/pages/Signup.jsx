@@ -9,6 +9,7 @@ export default function Signup() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [welcomeName, setWelcomeName] = useState(null);
@@ -20,6 +21,11 @@ export default function Signup() {
 
     if (password !== passwordConfirm) {
       setError('Şifreler eşleşmiyor.');
+      return;
+    }
+
+    if (!termsAccepted) {
+      setError('Devam etmek için Aydınlatma Metni ve Kullanım Koşullarını onaylamanız gerekiyor.');
       return;
     }
 
@@ -39,9 +45,12 @@ export default function Signup() {
       return;
     }
 
-    // Telefon numarasını profile ekle
+    // Telefon numarasını ve KVKK onay zamanını profile ekle
     if (data.user) {
-      await supabase.from('profiles').update({ phone }).eq('id', data.user.id);
+      await supabase
+        .from('profiles')
+        .update({ phone, terms_accepted_at: new Date().toISOString() })
+        .eq('id', data.user.id);
     }
 
     setSubmitting(false);
@@ -120,9 +129,23 @@ export default function Signup() {
           />
         </label>
 
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.85rem' }}>
+          <input
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            style={{ marginTop: '0.2rem' }}
+          />
+          <span className="muted">
+            <a href="/kvkk" target="_blank" rel="noreferrer">Aydınlatma Metni</a>'ni ve{' '}
+            <a href="/kullanim-kosullari" target="_blank" rel="noreferrer">Kullanım Koşulları</a>'nı
+            okudum, kabul ediyorum.
+          </span>
+        </label>
+
         {error && <p className="status-banner is-error">{error}</p>}
 
-        <button type="submit" className="btn btn-primary" disabled={submitting}>
+        <button type="submit" className="btn btn-primary" disabled={submitting || !termsAccepted}>
           {submitting ? 'Kayıt olunuyor...' : 'Üye ol'}
         </button>
 

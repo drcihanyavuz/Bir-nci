@@ -203,6 +203,14 @@ export default function CompetitionRoom() {
 
         <h1 className="stage-question">{question.text}</h1>
 
+        {question.image_url && (
+          <img
+            src={question.image_url}
+            alt="Soru görseli"
+            style={{ maxWidth: '100%', maxHeight: '240px', borderRadius: '10px', marginBottom: '1.5rem' }}
+          />
+        )}
+
         <div className="option-grid">
           {['a', 'b', 'c', 'd'].map((opt) => (
             <button
