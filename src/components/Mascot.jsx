@@ -3,30 +3,38 @@ import { useEffect, useState } from 'react';
 const WELCOME_TEXT =
   'Aramıza hoşgeldiniz. Seni gördüğüme çok sevindim. Ben İnci Boncuk. Bu yarışmanın sunucusuyum. Haydi yarışalım ve kazanalım.';
 
+const GREETED_KEY = 'birinci_mascot_greeted';
+
 export default function Mascot() {
   const [showBubble, setShowBubble] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowBubble(true), 400);
 
-    // Tarayıcı sesli okuma (Web Speech API) ile karşılama mesajını oku
-    if ('speechSynthesis' in window) {
+    // Sadece uygulama açılışında bir kez konuşsun — aynı oturumda
+    // tekrar bu sayfaya gelince tekrar seslendirme yapmasın.
+    const alreadyGreeted = sessionStorage.getItem(GREETED_KEY);
+
+    if (!alreadyGreeted && 'speechSynthesis' in window) {
+      sessionStorage.setItem(GREETED_KEY, '1');
+
       const speak = () => {
+        window.speechSynthesis.cancel(); // olası çakışan/kuyruklu sesleri temizle
+
         const utterance = new SpeechSynthesisUtterance(WELCOME_TEXT);
         utterance.lang = 'tr-TR';
-        utterance.pitch = 1.3;
-        utterance.rate = 1;
+        utterance.pitch = 1.6; // daha tiz, daha "tatlı" bir ton
+        utterance.rate = 0.95; // hafif yavaş, daha sıcak bir okuma
 
         const voices = window.speechSynthesis.getVoices();
-        const turkishFemale =
-          voices.find((v) => v.lang.startsWith('tr') && /female|kadın/i.test(v.name)) ||
+        const turkishVoice =
+          voices.find((v) => v.lang.startsWith('tr') && /female|kadın|yelda|filiz/i.test(v.name)) ||
           voices.find((v) => v.lang.startsWith('tr'));
-        if (turkishFemale) utterance.voice = turkishFemale;
+        if (turkishVoice) utterance.voice = turkishVoice;
 
         window.speechSynthesis.speak(utterance);
       };
 
-      // Bazı tarayıcılarda ses listesi asenkron yükleniyor
       if (window.speechSynthesis.getVoices().length > 0) {
         speak();
       } else {
