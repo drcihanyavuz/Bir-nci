@@ -1,11 +1,12 @@
 // supabase/functions/send-competition-reminders/index.ts
 //
-// pg_cron tarafından her birkaç dakikada bir tetiklenmesi için tasarlandı.
-// Başlangıcına 15 dakikadan az kalmış ve daha önce hatırlatma
-// gönderilmemiş yarışmaları bulur, katılımcılara Resend üzerinden
-// e-posta gönderir, sonra o yarışmayı "hatırlatma gönderildi" olarak işaretler.
+// pg_cron (ya da Supabase Dashboard'daki Cron Jobs) tarafından her
+// birkaç dakikada bir tetiklenmesi için tasarlandı. Başlangıcına 15
+// dakikadan az kalmış ve daha önce hatırlatma gönderilmemiş
+// yarışmaları bulur, katılımcılara Web Push bildirimi gönderir.
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import webpush from 'npm:web-push@3';
 
 Deno.serve(async () => {
   const supabaseAdmin = createClient(
@@ -13,9 +14,13 @@ Deno.serve(async () => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   );
 
-  const resendApiKey = Deno.env.get('RESEND_API_KEY');
+  webpush.setVapidDetails(
+    'mailto:destek@birincim.vercel.app',
+    Deno.env.get('VAPID_PUBLIC_KEY')!,
+    Deno.env.get('VAPID_PRIVATE_KEY')!
+  );
 
-  const { data: targets, error } = await supabaseAdmin.rpc('get_upcoming_reminder_targets');
+  const { data: targets, error } = await supabaseAdmin.rpc('get_push_reminder_targets');
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
@@ -25,26 +30,24 @@ Deno.serve(async () => {
     return new Response(JSON.stringify({ message: 'Hatırlatılacak yarışma yok' }));
   }
 
-  // Aynı yarışmayı tekrar tekrar işaretlememek için grupla
   const sentCompetitionIds = new Set<string>();
 
   for (const target of targets) {
-    if (resendApiKey) {
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'BirİNCİ <bildirim@birincim.vercel.app>',
-          to: target.email,
-          subject: `${target.competition_title} birazdan başlıyor!`,
-          html: `<p>Merhaba ${target.full_name},</p>
-                 <p><strong>${target.competition_title}</strong> adlı yarışma birazdan başlıyor.
-                 Hazır olmak için uygulamayı açmayı unutmayın!</p>`,
-        }),
-      });
+    const subscription = {
+      endpoint: target.endpoint,
+      keys: { p256dh: target.p256dh, auth: target.auth_key },
+    };
+
+    const payload = JSON.stringify({
+      title: `${target.competition_title} birazdan başlıyor!`,
+      body: 'Hazır olmak için uygulamayı açmayı unutmayın.',
+    });
+
+    try {
+      await webpush.sendNotification(subscription, payload);
+    } catch (err) {
+      // Abonelik artık geçersizse (tarayıcı silinmiş vb.) sessizce geç
+      console.error('push gönderilemedi:', err);
     }
 
     if (!sentCompetitionIds.has(target.competition_id)) {

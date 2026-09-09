@@ -1,11 +1,24 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { enablePushNotifications } from '../lib/push';
 
 const APP_URL = 'https://birincim.vercel.app';
 
 export default function Dashboard() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const navigate = useNavigate();
+  const [pushMessage, setPushMessage] = useState('');
+
+  const handleEnablePush = async () => {
+    setPushMessage('');
+    try {
+      await enablePushNotifications(user.id);
+      setPushMessage('Bildirimler açıldı!');
+    } catch (err) {
+      setPushMessage(err.message);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -47,10 +60,18 @@ export default function Dashboard() {
         <button className="panel-btn" onClick={handleInvite}>
           Davet et
         </button>
+        <button className="panel-btn" onClick={handleEnablePush}>
+          Bildirimleri Aç
+        </button>
+        <Link to="/profile" className="panel-btn">
+          Profilim
+        </Link>
         <button className="panel-btn" onClick={handleSignOut}>
           Çıkış
         </button>
       </div>
+
+      {pushMessage && <p className="muted" style={{ marginTop: '1rem' }}>{pushMessage}</p>}
     </div>
   );
 }
