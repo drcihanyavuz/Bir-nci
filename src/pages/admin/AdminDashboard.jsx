@@ -43,6 +43,12 @@ export default function AdminDashboard() {
         <Link to="/admin/past-competitions" className="panel-btn">
           Geçmiş yarışmalar
         </Link>
+        <Link to="/admin/live-monitor" className="panel-btn">
+          Canlı izleme
+        </Link>
+        <Link to="/admin/stats" className="panel-btn">
+          İstatistikler
+        </Link>
         <Link to="/admin/contact-messages" className="panel-btn">
           Mesajlar
         </Link>

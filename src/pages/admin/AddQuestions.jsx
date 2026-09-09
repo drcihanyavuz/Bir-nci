@@ -22,6 +22,9 @@ export default function AddQuestions() {
   const [starting, setStarting] = useState(false);
   const [startMessage, setStartMessage] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [competitionStatus, setCompetitionStatus] = useState(null);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -45,10 +48,17 @@ export default function AddQuestions() {
   const loadQuestions = async () => {
     const { data } = await supabase
       .from('questions')
-      .select('id, order_index, text')
+      .select('*')
       .eq('competition_id', competitionId)
       .order('order_index');
     setExistingQuestions(data ?? []);
+
+    const { data: comp } = await supabase
+      .from('competitions')
+      .select('status')
+      .eq('id', competitionId)
+      .single();
+    setCompetitionStatus(comp?.status ?? null);
   };
 
   useEffect(() => {
@@ -57,6 +67,62 @@ export default function AddQuestions() {
 
   const handleChange = (field) => (e) =>
     setForm({ ...form, [field]: e.target.value });
+
+  const handleStartEdit = (q) => {
+    setEditingId(q.id);
+    setEditForm({ ...q });
+  };
+
+  const handleUpdateQuestion = async (id) => {
+    const { error } = await supabase
+      .from('questions')
+      .update({
+        text: editForm.text,
+        option_a: editForm.option_a,
+        option_b: editForm.option_b,
+        option_c: editForm.option_c,
+        option_d: editForm.option_d,
+        correct_option: editForm.correct_option,
+        time_limit_seconds: Number(editForm.time_limit_seconds),
+      })
+      .eq('id', id);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    setEditingId(null);
+    loadQuestions();
+  };
+
+  const handleDeleteQuestion = async (id) => {
+    if (!window.confirm('Bu soruyu silmek istediğinize emin misiniz?')) return;
+
+    const { error } = await supabase.from('questions').delete().eq('id', id);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    // Sıradaki soru numaralarında boşluk kalmasın diye yeniden sırala
+    // (yarışma motoru order_index'in ardışık olmasına güveniyor).
+    const { data: remaining } = await supabase
+      .from('questions')
+      .select('id, order_index')
+      .eq('competition_id', competitionId)
+      .order('order_index');
+
+    for (let i = 0; i < (remaining ?? []).length; i++) {
+      const q = remaining[i];
+      if (q.order_index !== i + 1) {
+        await supabase.from('questions').update({ order_index: i + 1 }).eq('id', q.id);
+      }
+    }
+
+    loadQuestions();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -117,11 +183,77 @@ export default function AddQuestions() {
       {existingQuestions.length > 0 && (
         <div style={{ margin: '1.5rem 0' }}>
           {existingQuestions.map((q) => (
-            <div className="list-row" key={q.id}>
-              <span className="list-row-meta">Soru {q.order_index}</span>
-              <span>{q.text}</span>
+            <div key={q.id}>
+              {editingId === q.id ? (
+                <div className="form-panel stack" style={{ marginBottom: '0.75rem' }}>
+                  <label className="field">
+                    Soru metni
+                    <textarea
+                      value={editForm.text}
+                      onChange={(e) => setEditForm({ ...editForm, text: e.target.value })}
+                    />
+                  </label>
+                  {['a', 'b', 'c', 'd'].map((opt) => (
+                    <label className="field" key={opt}>
+                      {opt.toUpperCase()} şıkkı
+                      <input
+                        value={editForm[`option_${opt}`]}
+                        onChange={(e) => setEditForm({ ...editForm, [`option_${opt}`]: e.target.value })}
+                      />
+                    </label>
+                  ))}
+                  <label className="field">
+                    Doğru şık
+                    <select
+                      value={editForm.correct_option}
+                      onChange={(e) => setEditForm({ ...editForm, correct_option: e.target.value })}
+                    >
+                      <option value="a">A</option>
+                      <option value="b">B</option>
+                      <option value="c">C</option>
+                      <option value="d">D</option>
+                    </select>
+                  </label>
+                  <label className="field">
+                    Süre (saniye)
+                    <input
+                      type="number"
+                      value={editForm.time_limit_seconds}
+                      onChange={(e) => setEditForm({ ...editForm, time_limit_seconds: e.target.value })}
+                    />
+                  </label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button className="btn btn-primary" onClick={() => handleUpdateQuestion(q.id)}>
+                      Kaydet
+                    </button>
+                    <button className="btn btn-ghost" onClick={() => setEditingId(null)}>
+                      Vazgeç
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="list-row">
+                  <span className="list-row-meta">Soru {q.order_index}</span>
+                  <span style={{ flex: 1, margin: '0 1rem' }}>{q.text}</span>
+                  {competitionStatus === 'scheduled' && (
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button className="btn btn-ghost" onClick={() => handleStartEdit(q)}>
+                        Düzenle
+                      </button>
+                      <button className="btn btn-ghost" onClick={() => handleDeleteQuestion(q.id)}>
+                        Sil
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
+          {competitionStatus && competitionStatus !== 'scheduled' && (
+            <p className="muted" style={{ marginTop: '0.5rem' }}>
+              Bu yarışma başladığı için sorular artık düzenlenemez/silinemez.
+            </p>
+          )}
         </div>
       )}
 

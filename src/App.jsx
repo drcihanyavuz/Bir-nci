@@ -30,6 +30,9 @@ import AdminPackages from './pages/admin/AdminPackages';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminContactMessages from './pages/admin/AdminContactMessages';
 import AdminPastCompetitions from './pages/admin/AdminPastCompetitions';
+import AdminLiveMonitor from './pages/admin/AdminLiveMonitor';
+import AdminStats from './pages/admin/AdminStats';
+import ProfileEdit from './pages/ProfileEdit';
 
 export default function App() {
   return (
@@ -134,6 +137,34 @@ export default function App() {
                   <AdminRoute>
                     <AdminPastCompetitions />
                   </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/live-monitor"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminLiveMonitor />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/stats"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminStats />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfileEdit />
                 </ProtectedRoute>
               }
             />
