@@ -73,9 +73,7 @@ export default function Signup() {
   return (
     <div className="page" style={{ maxWidth: '420px', paddingTop: '3rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <div className="wordmark" style={{ fontSize: '1.6rem' }}>
-          Bir<em>İNCİ</em>
-        </div>
+        <img src="/icon-symbol.png" alt="BirİNCİ" style={{ width: '64px' }} />
       </div>
 
       <form onSubmit={handleSubmit} className="form-panel stack">

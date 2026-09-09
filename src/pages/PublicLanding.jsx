@@ -66,9 +66,7 @@ export default function PublicLanding() {
   return (
     <div className="landing">
       <Mascot />
-      <div className="wordmark landing-wordmark">
-        Bir<em>İNCİ</em>
-      </div>
+      <img src="/logo-full.png" alt="BirİNCİ Bilgi Yarışması" style={{ width: '180px', maxWidth: '70%' }} />
 
       <div className="countdown-block">
         {nextCompetition ? (

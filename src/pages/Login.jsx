@@ -87,9 +87,7 @@ export default function Login() {
   return (
     <div className="page" style={{ maxWidth: '420px', paddingTop: '4rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <div className="wordmark" style={{ fontSize: '1.6rem' }}>
-          Bir<em>İNCİ</em>
-        </div>
+        <img src="/icon-symbol.png" alt="BirİNCİ" style={{ width: '64px' }} />
       </div>
 
       <form onSubmit={handleSubmit} className="form-panel stack">

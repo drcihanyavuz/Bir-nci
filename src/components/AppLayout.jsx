@@ -10,7 +10,8 @@ export default function AppLayout({ children }) {
     <div>
       <div className="app-topbar">
         <Link to="/" className="home-link">
-          ⌂ Anasayfa
+          <img src="/icons/icon-192.png" alt="" style={{ width: '22px', height: '22px', verticalAlign: 'middle', marginRight: '0.3rem' }} />
+          Anasayfa
         </Link>
         {user && (
           <span className="user-chip" style={{ textAlign: 'right' }}>
