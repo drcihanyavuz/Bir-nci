@@ -96,6 +96,9 @@ export default function PublicLanding() {
         <Link to="/results" className="landing-btn">
           Yarışma sonuçları
         </Link>
+        <Link to="/leaderboard" className="landing-btn">
+          Liderlik Tablosu
+        </Link>
         <Link to="/contact" className="landing-btn">
           İletişim
         </Link>

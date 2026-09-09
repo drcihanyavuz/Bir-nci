@@ -54,6 +54,9 @@ export default function Dashboard() {
         <Link to="/survey" className="panel-btn">
           Anket
         </Link>
+        <Link to="/leaderboard" className="panel-btn">
+          Liderlik Tablosu
+        </Link>
         <Link to="/chat" className="panel-btn">
           Sohbet
         </Link>

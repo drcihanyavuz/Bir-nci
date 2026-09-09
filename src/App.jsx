@@ -10,6 +10,7 @@ import Signup from './pages/Signup';
 import ResetPassword from './pages/ResetPassword';
 import PublicResults from './pages/PublicResults';
 import LearnMore from './pages/LearnMore';
+import Leaderboard from './pages/Leaderboard';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard';
 import CompetitionList from './pages/CompetitionList';
@@ -47,6 +48,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/results" element={<PublicResults />} />
             <Route path="/yarismayi-ogrenelim" element={<LearnMore />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/kvkk" element={<Kvkk />} />
             <Route path="/kullanim-kosullari" element={<Terms />} />
