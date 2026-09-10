@@ -41,6 +41,20 @@ export default function CompetitionRoom() {
       .then(({ data }) => setActiveCount(data));
   }, [competitionId, question?.id]);
 
+  // Hazırlık (lobby) ekranındayken katılımcı sayısını birkaç saniyede
+  // bir tazele — insanlar bu sırada da katılabiliyor.
+  useEffect(() => {
+    if (lobbySecondsLeft === null) return;
+    const refresh = () => {
+      supabase
+        .rpc('get_active_participant_count', { p_competition_id: competitionId })
+        .then(({ data }) => setActiveCount(data));
+    };
+    refresh();
+    const interval = setInterval(refresh, 3000);
+    return () => clearInterval(interval);
+  }, [lobbySecondsLeft !== null, competitionId]);
+
   useEffect(() => {
     setSelectedOption(null);
     setHasAnswered(false);
@@ -206,8 +220,28 @@ export default function CompetitionRoom() {
   if (competition.status === 'active' && !question && lobbySecondsLeft !== null) {
     return (
       <div className="stage">
+        <div className="room-topbar" style={{ justifyContent: 'center' }}>
+          <div className="room-topbar-item">
+            <span className="label">Bağlanan</span>
+            <span className="value">{activeCount ?? '...'}</span>
+          </div>
+        </div>
+
         <h1>{competition.title}</h1>
         <p className="muted" style={{ marginTop: '0.5rem' }}>İlk soru birazdan geliyor, hazır olun!</p>
+
+        {competition.lobby_video_url && (
+          <video
+            src={competition.lobby_video_url}
+            className="room-media"
+            style={{ marginTop: '1rem' }}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        )}
+
         <div className="stage-countdown" style={{ marginTop: '1.5rem' }}>{lobbySecondsLeft}</div>
       </div>
     );

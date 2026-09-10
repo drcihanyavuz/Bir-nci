@@ -10,9 +10,30 @@ export default function NewCompetition() {
   const [prize1, setPrize1] = useState('');
   const [prize2, setPrize2] = useState('');
   const [prize3, setPrize3] = useState('');
+  const [lobbyVideoUrl, setLobbyVideoUrl] = useState('');
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingVideo(true);
+    const fileName = `lobby-${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage.from('question-images').upload(fileName, file);
+
+    if (!error) {
+      const { data } = supabase.storage.from('question-images').getPublicUrl(fileName);
+      setLobbyVideoUrl(data.publicUrl);
+    } else {
+      setError(error.message);
+    }
+
+    setUploadingVideo(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,6 +50,7 @@ export default function NewCompetition() {
         prize_rank_1: prize1 || null,
         prize_rank_2: prize2 || null,
         prize_rank_3: prize3 || null,
+        lobby_video_url: lobbyVideoUrl || null,
       })
       .select()
       .single();
@@ -105,6 +127,15 @@ export default function NewCompetition() {
           3. lük ödülü (opsiyonel)
           <input value={prize3} onChange={(e) => setPrize3(e.target.value)} placeholder="Örn: 100 TL" />
         </label>
+
+        <label className="field">
+          Hazırlık ekranında oynatılacak tanıtım videosu (opsiyonel)
+          <input type="file" accept="video/*" onChange={handleVideoUpload} disabled={uploadingVideo} />
+        </label>
+        {uploadingVideo && <p className="muted">Yükleniyor...</p>}
+        {lobbyVideoUrl && (
+          <video src={lobbyVideoUrl} style={{ maxWidth: '240px', borderRadius: '8px' }} controls />
+        )}
 
         {error && <p className="status-banner is-error">{error}</p>}
 

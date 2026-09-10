@@ -22,6 +22,52 @@ export default function AddQuestions() {
   const [starting, setStarting] = useState(false);
   const [startMessage, setStartMessage] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [lobbyVideoUrl, setLobbyVideoUrl] = useState('');
+  const [uploadingLobbyVideo, setUploadingLobbyVideo] = useState(false);
+  const [lobbyVideoMessage, setLobbyVideoMessage] = useState('');
+
+  const loadCompetition = async () => {
+    const { data } = await supabase
+      .from('competitions')
+      .select('lobby_video_url')
+      .eq('id', competitionId)
+      .single();
+    setLobbyVideoUrl(data?.lobby_video_url || '');
+  };
+
+  const handleLobbyVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingLobbyVideo(true);
+    setLobbyVideoMessage('');
+    const fileName = `lobby-${Date.now()}-${file.name}`;
+
+    const { error: uploadError } = await supabase.storage.from('question-images').upload(fileName, file);
+
+    if (uploadError) {
+      setLobbyVideoMessage(uploadError.message);
+      setUploadingLobbyVideo(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('question-images').getPublicUrl(fileName);
+
+    const { error: updateError } = await supabase
+      .from('competitions')
+      .update({ lobby_video_url: data.publicUrl })
+      .eq('id', competitionId);
+
+    setUploadingLobbyVideo(false);
+
+    if (updateError) {
+      setLobbyVideoMessage(updateError.message);
+      return;
+    }
+
+    setLobbyVideoUrl(data.publicUrl);
+    setLobbyVideoMessage('Video kaydedildi!');
+  };
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState(null);
   const [competitionStatus, setCompetitionStatus] = useState(null);
@@ -63,6 +109,7 @@ export default function AddQuestions() {
 
   useEffect(() => {
     loadQuestions();
+    loadCompetition();
   }, [competitionId]);
 
   const handleChange = (field) => (e) =>
@@ -324,6 +371,23 @@ export default function AddQuestions() {
       <p style={{ marginTop: '1.5rem' }}>
         <Link to="/admin/competitions/new">Yeni yarışma oluştur</Link>
       </p>
+
+      <div className="form-panel" style={{ marginTop: '1.5rem' }}>
+        <h2>Hazırlık ekranı videosu</h2>
+        <p className="muted" style={{ marginTop: '0.5rem' }}>
+          Yarışma başlamadan önceki 100 saniyelik bekleme ekranında oynatılır. İstediğiniz zaman
+          ekleyebilir ya da değiştirebilirsiniz.
+        </p>
+        <label className="field" style={{ marginTop: '0.75rem' }}>
+          Video dosyası
+          <input type="file" accept="video/*" onChange={handleLobbyVideoUpload} disabled={uploadingLobbyVideo} />
+        </label>
+        {uploadingLobbyVideo && <p className="muted">Yükleniyor...</p>}
+        {lobbyVideoMessage && <p className="status-banner">{lobbyVideoMessage}</p>}
+        {lobbyVideoUrl && (
+          <video src={lobbyVideoUrl} style={{ maxWidth: '240px', borderRadius: '8px', marginTop: '0.5rem' }} controls />
+        )}
+      </div>
 
       <div className="form-panel" style={{ marginTop: '1.5rem' }}>
         <h2>Yarışmayı hemen başlat</h2>
