@@ -197,6 +197,17 @@ export default function CompetitionRoom() {
     );
   }
 
+  if (competition.status === 'cancelled') {
+    return (
+      <div className="stage">
+        <h1>Bu yarışma iptal edildi</h1>
+        <p className="muted" style={{ marginTop: '1rem' }}>
+          Ödediğiniz inci, hesabınıza otomatik olarak iade edildi.
+        </p>
+      </div>
+    );
+  }
+
   if (competition.status === 'awaiting_tiebreak') {
     return (
       <div className="stage">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 
 const emptyQuestion = {
@@ -15,6 +15,7 @@ const emptyQuestion = {
 
 export default function AddQuestions() {
   const { competitionId } = useParams();
+  const navigate = useNavigate();
   const [existingQuestions, setExistingQuestions] = useState([]);
   const [form, setForm] = useState(emptyQuestion);
   const [error, setError] = useState('');
@@ -26,13 +27,73 @@ export default function AddQuestions() {
   const [uploadingLobbyVideo, setUploadingLobbyVideo] = useState(false);
   const [lobbyVideoMessage, setLobbyVideoMessage] = useState('');
 
+  const [details, setDetails] = useState(null);
+  const [detailsStatus, setDetailsStatus] = useState('scheduled');
+  const [savingDetails, setSavingDetails] = useState(false);
+  const [detailsMessage, setDetailsMessage] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+
   const loadCompetition = async () => {
     const { data } = await supabase
       .from('competitions')
-      .select('lobby_video_url')
+      .select('*')
       .eq('id', competitionId)
       .single();
     setLobbyVideoUrl(data?.lobby_video_url || '');
+    if (data) {
+      setDetailsStatus(data.status);
+      setDetails({
+        title: data.title,
+        start_time: data.start_time ? data.start_time.slice(0, 16) : '',
+        max_participants: data.max_participants,
+        entry_cost_inci: data.entry_cost_inci,
+        prize_rank_1: data.prize_rank_1 || '',
+        prize_rank_2: data.prize_rank_2 || '',
+        prize_rank_3: data.prize_rank_3 || '',
+      });
+    }
+  };
+
+  const handleDetailsChange = (field) => (e) =>
+    setDetails({ ...details, [field]: e.target.value });
+
+  const handleSaveDetails = async (e) => {
+    e.preventDefault();
+    setSavingDetails(true);
+    setDetailsMessage('');
+
+    const { error } = await supabase
+      .from('competitions')
+      .update({
+        title: details.title,
+        start_time: new Date(details.start_time).toISOString(),
+        max_participants: Number(details.max_participants),
+        entry_cost_inci: Number(details.entry_cost_inci),
+        prize_rank_1: details.prize_rank_1 || null,
+        prize_rank_2: details.prize_rank_2 || null,
+        prize_rank_3: details.prize_rank_3 || null,
+      })
+      .eq('id', competitionId);
+
+    setSavingDetails(false);
+    setDetailsMessage(error ? error.message : 'Kaydedildi!');
+  };
+
+  const handleCancelCompetition = async () => {
+    if (!window.confirm('Bu yarışmayı iptal etmek istediğinize emin misiniz? Katılan herkesin incisi otomatik iade edilecek.')) {
+      return;
+    }
+
+    setCancelling(true);
+    const { error } = await supabase.rpc('cancel_competition', { p_competition_id: competitionId });
+    setCancelling(false);
+
+    if (error) {
+      setDetailsMessage(error.message);
+      return;
+    }
+
+    navigate('/admin');
   };
 
   const handleLobbyVideoUpload = async (e) => {
@@ -223,6 +284,100 @@ export default function AddQuestions() {
   return (
     <div className="page">
       <h1>Soru ekle</h1>
+
+      {details && (
+        <form onSubmit={handleSaveDetails} className="form-panel stack" style={{ marginTop: '1.5rem' }}>
+          <h2>Yarışma bilgileri</h2>
+
+          {detailsStatus !== 'scheduled' && (
+            <p className="muted">
+              Bu yarışma artık "başlamamış" durumda değil, bu yüzden bilgiler düzenlenemiyor.
+            </p>
+          )}
+
+          <label className="field">
+            Başlık
+            <input
+              value={details.title}
+              onChange={handleDetailsChange('title')}
+              disabled={detailsStatus !== 'scheduled'}
+              required
+            />
+          </label>
+          <label className="field">
+            Başlangıç zamanı
+            <input
+              type="datetime-local"
+              value={details.start_time}
+              onChange={handleDetailsChange('start_time')}
+              disabled={detailsStatus !== 'scheduled'}
+              required
+            />
+          </label>
+          <label className="field">
+            Kontenjan
+            <input
+              type="number"
+              min="1"
+              value={details.max_participants}
+              onChange={handleDetailsChange('max_participants')}
+              disabled={detailsStatus !== 'scheduled'}
+              required
+            />
+          </label>
+          <label className="field">
+            Katılım bedeli (inci)
+            <input
+              type="number"
+              min="0"
+              value={details.entry_cost_inci}
+              onChange={handleDetailsChange('entry_cost_inci')}
+              disabled={detailsStatus !== 'scheduled'}
+              required
+            />
+          </label>
+          <label className="field">
+            1. lik ödülü
+            <input
+              value={details.prize_rank_1}
+              onChange={handleDetailsChange('prize_rank_1')}
+              disabled={detailsStatus !== 'scheduled'}
+            />
+          </label>
+          <label className="field">
+            2. lik ödülü
+            <input
+              value={details.prize_rank_2}
+              onChange={handleDetailsChange('prize_rank_2')}
+              disabled={detailsStatus !== 'scheduled'}
+            />
+          </label>
+          <label className="field">
+            3. lük ödülü
+            <input
+              value={details.prize_rank_3}
+              onChange={handleDetailsChange('prize_rank_3')}
+              disabled={detailsStatus !== 'scheduled'}
+            />
+          </label>
+
+          {detailsMessage && <p className="status-banner">{detailsMessage}</p>}
+
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            {detailsStatus === 'scheduled' && (
+              <button type="submit" className="btn btn-primary" disabled={savingDetails}>
+                {savingDetails ? 'Kaydediliyor...' : 'Bilgileri kaydet'}
+              </button>
+            )}
+            {(detailsStatus === 'scheduled' || detailsStatus === 'active' || detailsStatus === 'awaiting_tiebreak') && (
+              <button type="button" className="btn btn-ghost" onClick={handleCancelCompetition} disabled={cancelling}>
+                {cancelling ? 'İptal ediliyor...' : 'Yarışmayı iptal et'}
+              </button>
+            )}
+          </div>
+        </form>
+      )}
+
       <p className="muted" style={{ marginTop: '0.5rem' }}>
         {existingQuestions.length} soru eklendi.
       </p>
