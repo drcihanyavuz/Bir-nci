@@ -1,11 +1,23 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 
 const APP_URL = 'https://birincim.vercel.app';
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
+  const [upcoming, setUpcoming] = useState([]);
+
+  useEffect(() => {
+    supabase
+      .from('competitions')
+      .select('id, title, start_time, status')
+      .in('status', ['scheduled', 'active', 'awaiting_tiebreak'])
+      .order('start_time')
+      .then(({ data }) => setUpcoming(data ?? []));
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -66,6 +78,25 @@ export default function AdminDashboard() {
       <p style={{ marginTop: '2rem' }}>
         <Link to="/admin/tiebreak" className="muted">Ek soru bekleyen yarışmalar</Link>
       </p>
+
+      {upcoming.length > 0 && (
+        <div style={{ marginTop: '2rem', textAlign: 'left' }}>
+          <h2>Yaklaşan / devam eden yarışmalar</h2>
+          {upcoming.map((c) => (
+            <div className="list-row" key={c.id}>
+              <div>
+                <div className="list-row-title">{c.title}</div>
+                <div className="list-row-meta">
+                  {new Date(c.start_time).toLocaleString('tr-TR')} · {c.status}
+                </div>
+              </div>
+              <Link to={`/admin/competitions/${c.id}/questions`} className="btn btn-ghost">
+                Yönet
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
