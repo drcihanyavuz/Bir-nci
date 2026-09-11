@@ -4,9 +4,9 @@ import { supabase } from '../lib/supabaseClient';
 import { useCompetition } from '../hooks/useCompetition';
 import { useMyParticipant } from '../hooks/useMyParticipant';
 import { useCurrentQuestion } from '../hooks/useCurrentQuestion';
-import { playApplauseSound } from '../lib/sound';
+import { playGongSound } from '../lib/sound';
 
-const REVEAL_DURATION_SECONDS = 5;
+const REVEAL_DURATION_SECONDS = 20;
 
 function isVideoUrl(url) {
   return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url || '');
@@ -30,7 +30,7 @@ export default function CompetitionRoom() {
   const autoStartCalled = useRef(false);
   const revealCalled = useRef(false);
   const revealFetchedForQuestion = useRef(null);
-  const soundPlayedForQuestion = useRef(null);
+  const gongPlayedForQuestion = useRef(null);
   const [lobbySecondsLeft, setLobbySecondsLeft] = useState(null);
 
   // Aktif katılımcı sayısını her yeni soruda tazele
@@ -118,11 +118,21 @@ export default function CompetitionRoom() {
       setSecondsLeft(remaining);
 
       if (remaining === 0) {
-        // Sonuçları bir kez çek
+        // Süre dolar dolmaz gong sesi (bir kez)
+        if (gongPlayedForQuestion.current !== question.id) {
+          gongPlayedForQuestion.current = question.id;
+          playGongSound();
+        }
+
+        // Sonuçları çek — saat kayması yüzünden ilk deneme başarısız
+        // olursa (sunucu "süre henüz dolmadı" derse), bir sonraki
+        // saniyede tekrar dene. Sadece BAŞARILI olunca tekrar denemeyi durdur.
         if (revealFetchedForQuestion.current !== question.id) {
-          revealFetchedForQuestion.current = question.id;
-          supabase.rpc('get_question_reveal', { p_question_id: question.id }).then(({ data }) => {
-            if (data) setRevealData(data);
+          supabase.rpc('get_question_reveal', { p_question_id: question.id }).then(({ data, error }) => {
+            if (data && !error) {
+              revealFetchedForQuestion.current = question.id;
+              setRevealData(data);
+            }
           });
         }
 
@@ -143,13 +153,7 @@ export default function CompetitionRoom() {
     return () => clearInterval(interval);
   }, [question, competitionId]);
 
-  // Sonuçlar açıklanınca bir kez alkış sesi çal
-  useEffect(() => {
-    if (revealData && soundPlayedForQuestion.current !== question?.id) {
-      soundPlayedForQuestion.current = question?.id;
-      playApplauseSound();
-    }
-  }, [revealData, question?.id]);
+  // (Alkış sesi artık kullanılmıyor — süre dolunca gong çalıyor.)
 
   const handleAnswer = async (option) => {
     if (hasAnswered || secondsLeft === 0) return;
@@ -267,7 +271,7 @@ export default function CompetitionRoom() {
     return (
       <div className="stage">
         <div className="room-topbar">
-          <div className="room-topbar-item">
+          <div className="room-topbar-item room-topbar-item-big">
             <span className="label">Soru</span>
             <span className="value">{question.order_index}</span>
           </div>
@@ -275,11 +279,16 @@ export default function CompetitionRoom() {
             <span className="label">Yarışan</span>
             <span className="value">{activeCount ?? '...'}</span>
           </div>
-          <div className={`room-topbar-item countdown ${secondsLeft <= 3 && !isRevealing ? 'is-urgent' : ''}`}>
-            <span className="label">{isRevealing ? 'Sonraki soru' : 'Süre'}</span>
-            <span className="value">{isRevealing ? revealCountdown : (secondsLeft ?? '...')}</span>
-          </div>
         </div>
+
+        <div className="room-central-countdown">
+          {isRevealing ? revealCountdown : (secondsLeft ?? '...')}
+        </div>
+        {isRevealing && (
+          <p style={{ textAlign: 'center', marginTop: '-0.75rem', fontWeight: 700, letterSpacing: '0.03em' }}>
+            SIRADAKİ SORU GELİYOR
+          </p>
+        )}
 
         {question.image_url && (
           isVideoUrl(question.image_url) ? (

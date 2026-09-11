@@ -343,8 +343,8 @@ textarea:focus-visible {
 }
 
 .option-btn.is-selected {
-  border-color: var(--gold);
-  background: var(--bg-surface-raised);
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.35);
 }
 
 .option-letter {
@@ -683,6 +683,25 @@ textarea:focus-visible {
   color: var(--coral);
 }
 
+.room-topbar-item-big {
+  margin-top: -0.6rem;
+}
+
+.room-topbar-item-big .value {
+  font-size: 2.4rem;
+  color: #d21f1f;
+}
+
+.room-central-countdown {
+  font-family: 'Fraunces', serif;
+  font-size: 5rem;
+  font-weight: 600;
+  color: #111111;
+  text-align: center;
+  line-height: 1;
+  margin: 0.5rem 0 1.25rem;
+}
+
 .room-media {
   max-width: 100%;
   max-height: 220px;
@@ -715,6 +734,12 @@ textarea:focus-visible {
 
 .reveal-row.is-correct {
   border-color: var(--seafoam);
+  animation: reveal-correct-blink 0.9s ease-in-out infinite;
+}
+
+@keyframes reveal-correct-blink {
+  0%, 100% { background: var(--bg-surface); }
+  50% { background: #1c5a44; }
 }
 
 .reveal-fill {

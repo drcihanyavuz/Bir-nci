@@ -34,3 +34,33 @@ export function playApplauseSound() {
     // Ses çalınamazsa sessizce geç, uygulamayı bozmasın
   }
 }
+
+// Süre dolduğunda çalınan "gong" sesi — gerçek bir gong kaydımız
+// olmadığı için, alçak frekanslı, uzun sönümlü bir ton karışımıyla
+// sentezliyoruz (temel frekans + birkaç harmonik).
+export function playGongSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    const duration = 2.2;
+    const fundamentals = [110, 174, 233, 275]; // gong benzeri, uyumsuz harmonikler
+
+    fundamentals.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+
+      const gain = ctx.createGain();
+      const peak = i === 0 ? 0.5 : 0.5 / (i + 1);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(peak, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    });
+  } catch {
+    // Ses çalınamazsa sessizce geç
+  }
+}
