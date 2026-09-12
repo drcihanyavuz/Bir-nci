@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
+import { enablePushNotifications } from '../lib/push';
 
 export default function ProfileEdit() {
   const { user } = useAuth();
@@ -10,6 +11,17 @@ export default function ProfileEdit() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
+  const [pushMessage, setPushMessage] = useState('');
+
+  const handleEnablePush = async () => {
+    setPushMessage('');
+    try {
+      await enablePushNotifications(user.id);
+      setPushMessage('Bildirimler açıldı!');
+    } catch (err) {
+      setPushMessage(err.message);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -70,6 +82,17 @@ export default function ProfileEdit() {
           {saving ? 'Kaydediliyor...' : 'Kaydet'}
         </button>
       </form>
+
+      <div className="form-panel" style={{ marginTop: '1.5rem' }}>
+        <h2>Bildirimler</h2>
+        <p className="muted" style={{ marginTop: '0.5rem' }}>
+          Yarışma başlamadan önce telefonunuza hatırlatma bildirimi alın.
+        </p>
+        <button className="btn btn-ghost" onClick={handleEnablePush} style={{ marginTop: '0.75rem' }}>
+          Bildirimleri Aç
+        </button>
+        {pushMessage && <p className="muted" style={{ marginTop: '0.5rem' }}>{pushMessage}</p>}
+      </div>
     </div>
   );
 }
