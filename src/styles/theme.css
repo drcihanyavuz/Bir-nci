@@ -47,6 +47,7 @@ body {
   color: var(--pearl);
   font-family: 'Manrope', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-transform: uppercase;
 }
 
 h1,
@@ -207,11 +208,13 @@ textarea:focus-visible {
   padding: 0.7rem 1.4rem;
   font-size: 0.95rem;
   font-weight: 600;
-  transition: transform 0.12s ease, background 0.15s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25), 0 6px 10px rgba(0, 0, 0, 0.18);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary {
@@ -330,11 +333,17 @@ textarea:focus-visible {
   padding: 1.1rem 1rem;
   font-size: 1rem;
   text-align: left;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2), 0 6px 10px rgba(0, 0, 0, 0.15);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .option-btn:hover:not(:disabled) {
   background: var(--btn-blue-hover);
+}
+
+.option-btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
 .option-btn:disabled {
@@ -466,13 +475,19 @@ textarea:focus-visible {
   color: var(--pearl);
   font-family: 'Fraunces', serif;
   font-size: 1.1rem;
-  transition: background 0.15s ease, transform 0.12s ease;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.15);
+  transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .landing-btn:hover {
   background: var(--btn-blue-hover);
   text-decoration: none;
   transform: translateY(-2px);
+}
+
+.landing-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
 /* ---- Panel (dashboard) büyük butonlar ---- */
@@ -499,7 +514,8 @@ textarea:focus-visible {
   color: var(--pearl);
   font-family: 'Fraunces', serif;
   font-size: 1.15rem;
-  transition: background 0.15s ease, transform 0.12s ease;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.15);
+  transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.08s ease;
   text-align: center;
 }
 
@@ -507,6 +523,11 @@ textarea:focus-visible {
   background: var(--btn-blue-hover);
   text-decoration: none;
   transform: translateY(-2px);
+}
+
+.panel-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
 /* ---- Sonuç tablosu ---- */

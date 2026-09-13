@@ -27,13 +27,16 @@ export default function Leaderboard() {
 
       {!loading && (
         <div style={{ marginTop: '1.5rem' }}>
-          {rows.map((row, index) => (
-            <div className="results-row" key={row.user_id ?? index}>
-              <span className="rank-badge">{index + 1}.</span>
-              <span style={{ flex: 1 }}>{row.full_name || 'İsimsiz üye'}</span>
-              <span className="gold-text">{row.points} puan</span>
-            </div>
-          ))}
+          {rows.map((row, index) => {
+            const crown = index === 0 ? '👑 ' : index === 1 ? '🥈 ' : index === 2 ? '🥉 ' : '';
+            return (
+              <div className="results-row" key={row.user_id ?? index}>
+                <span className="rank-badge">{index + 1}.</span>
+                <span style={{ flex: 1 }}>{crown}{row.full_name || 'İsimsiz üye'}</span>
+                <span className="gold-text">{row.points} puan</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
