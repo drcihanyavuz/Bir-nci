@@ -4,27 +4,27 @@
 
 :root {
   /* Renkler */
-  --bg-deep: #f5c518;
-  --bg-surface: #1d4ed8;
-  --bg-surface-raised: #2f5fee;
-  --border-subtle: #163ea8;
+  --bg-deep: #ffd6e2;
+  --bg-surface: #fff3f6;
+  --bg-surface-raised: #ffe6ee;
+  --border-subtle: #f3b8cc;
 
-  --pearl: #ffffff;
-  --pearl-dim: #d7e2ff;
-  --pearl-faint: #9db3e8;
+  --pearl: #1e3a8a;
+  --pearl-dim: #3b5aa6;
+  --pearl-faint: #8798c9;
 
-  --gold: #ffd500;
-  --gold-deep: #e0b800;
-  --gold-glow: rgba(255, 213, 0, 0.35);
+  --gold: #e0972d;
+  --gold-deep: #b9791f;
+  --gold-glow: rgba(224, 151, 45, 0.35);
 
-  --coral: #e2574c;
-  --coral-deep: #b5352c;
+  --coral: #d21f1f;
+  --coral-deep: #a51717;
 
-  --seafoam: #4fa98c;
-  --seafoam-deep: #357a63;
+  --seafoam: #2f8f6f;
+  --seafoam-deep: #226b53;
 
-  --btn-blue: #2563eb;
-  --btn-blue-hover: #1d4fc7;
+  --btn-blue: #ffd500;
+  --btn-blue-hover: #e6c000;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -323,7 +323,7 @@ textarea:focus-visible {
 }
 
 .option-btn {
-  background: var(--bg-surface);
+  background: var(--btn-blue);
   border: 1px solid var(--border-subtle);
   color: var(--pearl);
   border-radius: var(--radius-md);
@@ -334,8 +334,7 @@ textarea:focus-visible {
 }
 
 .option-btn:hover:not(:disabled) {
-  border-color: var(--gold);
-  background: var(--bg-surface-raised);
+  background: var(--btn-blue-hover);
 }
 
 .option-btn:disabled {
@@ -460,19 +459,18 @@ textarea:focus-visible {
 }
 
 .landing-btn {
-  background: var(--bg-surface);
+  background: var(--btn-blue);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 1.5rem 1rem;
   color: var(--pearl);
   font-family: 'Fraunces', serif;
   font-size: 1.1rem;
-  transition: border-color 0.15s ease, transform 0.12s ease;
+  transition: background 0.15s ease, transform 0.12s ease;
 }
 
 .landing-btn:hover {
-  border-color: var(--gold);
-  color: var(--gold);
+  background: var(--btn-blue-hover);
   text-decoration: none;
   transform: translateY(-2px);
 }
@@ -494,20 +492,19 @@ textarea:focus-visible {
 }
 
 .panel-btn {
-  background: var(--bg-surface);
+  background: var(--btn-blue);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 2rem 1rem;
   color: var(--pearl);
   font-family: 'Fraunces', serif;
   font-size: 1.15rem;
-  transition: border-color 0.15s ease, transform 0.12s ease;
+  transition: background 0.15s ease, transform 0.12s ease;
   text-align: center;
 }
 
 .panel-btn:hover {
-  border-color: var(--gold);
-  color: var(--gold);
+  background: var(--btn-blue-hover);
   text-decoration: none;
   transform: translateY(-2px);
 }
