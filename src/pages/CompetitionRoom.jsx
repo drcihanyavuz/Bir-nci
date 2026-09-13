@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useCompetition } from '../hooks/useCompetition';
 import { useMyParticipant } from '../hooks/useMyParticipant';
@@ -14,6 +14,7 @@ function isVideoUrl(url) {
 
 export default function CompetitionRoom() {
   const { competitionId } = useParams();
+  const navigate = useNavigate();
   const { competition, loading: loadingCompetition } = useCompetition(competitionId);
   const { participant, loading: loadingParticipant } = useMyParticipant(competitionId);
   const question = useCurrentQuestion(competition?.current_question_id);
@@ -185,7 +186,17 @@ export default function CompetitionRoom() {
     return (
       <div className="stage">
         <div className="stage-countdown is-urgent" style={{ fontSize: '2.5rem' }}>Elendiniz</div>
-        <p className="muted" style={{ marginTop: '1rem' }}>Bir sonraki yarışmada tekrar deneyebilirsiniz.</p>
+        <p className="muted" style={{ marginTop: '1rem' }}>
+          Yarışmayı izlemeye devam edebilir ya da çıkabilirsiniz.
+        </p>
+        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
+          <button className="btn btn-ghost" onClick={() => navigate('/dashboard')}>
+            YARIŞMADAN AYRIL
+          </button>
+          <button className="btn btn-primary" onClick={() => navigate(`/spectate/${competitionId}`)}>
+            İZLEMEYE DEVAM ET
+          </button>
+        </div>
       </div>
     );
   }
