@@ -28,8 +28,6 @@ export default function Dashboard() {
 
   return (
     <div className="page" style={{ textAlign: 'center' }}>
-      <h1>Ne yapmak istersin?</h1>
-
       <div className="panel-grid">
         <Link to="/competitions" className="panel-btn">
           Yarışmaya katıl
