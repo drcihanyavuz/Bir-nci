@@ -27,7 +27,7 @@ export default function CompetitionRoom() {
   const [revealData, setRevealData] = useState(null); // [{option_letter, vote_count, correct_option}]
   const [revealCountdown, setRevealCountdown] = useState(null);
 
-  const advanceCalledForQuestion = useRef(null);
+  const advanceInFlight = useRef(false);
   const autoStartCalled = useRef(false);
   const revealCalled = useRef(false);
   const revealFetchedForQuestion = useRef(null);
@@ -142,9 +142,15 @@ export default function CompetitionRoom() {
         const remainingReveal = Math.max(0, REVEAL_DURATION_SECONDS - secondsSinceEnd);
         setRevealCountdown(remainingReveal);
 
-        if (remainingReveal === 0 && advanceCalledForQuestion.current !== question.id) {
-          advanceCalledForQuestion.current = question.id;
-          supabase.rpc('advance_competition', { p_competition_id: competitionId });
+        // Süre dolduktan REVEAL_DURATION_SECONDS sonra sıradaki soruya geç.
+        // Saat kayması yüzünden çağrı "henüz sırası değil" deyip hiçbir şey
+        // yapmadan dönebilir — bu yüzden soru gerçekten değişene kadar
+        // (advanceInFlight bayrağı serbest kalınca) her saniye tekrar deniyoruz.
+        if (remainingReveal === 0 && !advanceInFlight.current) {
+          advanceInFlight.current = true;
+          supabase.rpc('advance_competition', { p_competition_id: competitionId }).finally(() => {
+            advanceInFlight.current = false;
+          });
         }
       }
     };
