@@ -30,6 +30,8 @@ import AdminTiebreak from './pages/admin/AdminTiebreak';
 import AdminChat from './pages/admin/AdminChat';
 import AdminSurvey from './pages/admin/AdminSurvey';
 import AdminPackages from './pages/admin/AdminPackages';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminUserDetail from './pages/admin/AdminUserDetail';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminContactMessages from './pages/admin/AdminContactMessages';
 import AdminPastCompetitions from './pages/admin/AdminPastCompetitions';
@@ -230,6 +232,26 @@ export default function App() {
                 <ProtectedRoute>
                   <AdminRoute>
                     <AdminPackages />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminUsers />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users/:userId"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminUserDetail />
                   </AdminRoute>
                 </ProtectedRoute>
               }

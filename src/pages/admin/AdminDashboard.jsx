@@ -49,6 +49,9 @@ export default function AdminDashboard() {
         <Link to="/admin/packages" className="panel-btn">
           İnci ayarları
         </Link>
+        <Link to="/admin/users" className="panel-btn">
+          Üyeler
+        </Link>
         <Link to="/admin/survey" className="panel-btn">
           Anket yönetimi
         </Link>
