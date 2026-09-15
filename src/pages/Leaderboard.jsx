@@ -10,6 +10,7 @@ export default function Leaderboard() {
       .from('public_leaderboard')
       .select('*')
       .order('points', { ascending: false })
+      .order('full_name', { ascending: true })
       .then(({ data }) => {
         setRows(data ?? []);
         setLoading(false);

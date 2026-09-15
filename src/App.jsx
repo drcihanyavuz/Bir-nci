@@ -32,6 +32,7 @@ import AdminSurvey from './pages/admin/AdminSurvey';
 import AdminPackages from './pages/admin/AdminPackages';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminUserDetail from './pages/admin/AdminUserDetail';
+import AdminPending from './pages/admin/AdminPending';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminContactMessages from './pages/admin/AdminContactMessages';
 import AdminPastCompetitions from './pages/admin/AdminPastCompetitions';
@@ -252,6 +253,16 @@ export default function App() {
                 <ProtectedRoute>
                   <AdminRoute>
                     <AdminUserDetail />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/pending"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminPending />
                   </AdminRoute>
                 </ProtectedRoute>
               }

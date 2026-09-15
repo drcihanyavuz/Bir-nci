@@ -4,11 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 export default function AdminLiveMonitor() {
   const [competitions, setCompetitions] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [activeCount, setActiveCount] = useState(null);
-  const [totalCount, setTotalCount] = useState(null);
-  const [showList, setShowList] = useState(false);
   const [participants, setParticipants] = useState([]);
-  const [loadingList, setLoadingList] = useState(false);
 
   useEffect(() => {
     supabase
@@ -19,39 +15,33 @@ export default function AdminLiveMonitor() {
       .then(({ data }) => setCompetitions(data ?? []));
   }, []);
 
-  useEffect(() => {
-    if (!selectedId) return undefined;
-
-    const refreshCounts = async () => {
-      const [{ data: active }, { count }] = await Promise.all([
-        supabase.rpc('get_active_participant_count', { p_competition_id: selectedId }),
-        supabase
-          .from('participants')
-          .select('id', { count: 'exact', head: true })
-          .eq('competition_id', selectedId),
-      ]);
-      setActiveCount(typeof active === 'number' ? active : null);
-      setTotalCount(count ?? null);
-    };
-
-    refreshCounts();
-    const interval = setInterval(refreshCounts, 4000);
-    return () => clearInterval(interval);
-  }, [selectedId]);
-
-  const loadParticipants = async () => {
-    setLoadingList(true);
-    setShowList(true);
+  const loadParticipants = async (competitionId) => {
     const { data } = await supabase
       .from('participants')
       .select('id, is_eliminated, joined_at, profiles(full_name)')
-      .eq('competition_id', selectedId)
-      .eq('is_eliminated', false)
-      .order('joined_at')
-      .limit(100);
+      .eq('competition_id', competitionId)
+      .order('is_eliminated')
+      .order('joined_at');
     setParticipants(data ?? []);
-    setLoadingList(false);
   };
+
+  useEffect(() => {
+    if (!selectedId) return;
+    loadParticipants(selectedId);
+
+    const channel = supabase
+      .channel(`live-monitor-${selectedId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'participants', filter: `competition_id=eq.${selectedId}` },
+        () => loadParticipants(selectedId)
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, [selectedId]);
+
+  const activeCount = participants.filter((p) => !p.is_eliminated).length;
 
   return (
     <div className="page-wide">
@@ -62,11 +52,7 @@ export default function AdminLiveMonitor() {
           <button
             key={c.id}
             className={`btn ${selectedId === c.id ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => {
-              setSelectedId(c.id);
-              setShowList(false);
-              setParticipants([]);
-            }}
+            onClick={() => setSelectedId(c.id)}
           >
             {c.title}
           </button>
@@ -77,26 +63,19 @@ export default function AdminLiveMonitor() {
       {selectedId && (
         <>
           <p className="muted" style={{ marginTop: '1.5rem' }}>
-            {activeCount ?? '...'} kişi hâlâ yarışıyor / toplam {totalCount ?? '...'} katılımcı
+            {activeCount} kişi hâlâ yarışıyor / toplam {participants.length} katılımcı
           </p>
-          <p className="muted">
-            Bin kişilik odada isim listesi canlı tutulmaz; sayılar birkaç saniyede bir yenilenir.
-          </p>
-          <button className="btn btn-ghost" style={{ marginTop: '0.75rem' }} onClick={loadParticipants}>
-            Hayatta kalan ilk 100 kişiyi göster
-          </button>
 
-          {showList && (
-            <div style={{ marginTop: '1rem' }}>
-              {loadingList && <p className="muted">Yükleniyor...</p>}
-              {participants.map((p) => (
-                <div className="list-row" key={p.id}>
-                  <span>{p.profiles?.full_name ?? 'İsimsiz'}</span>
-                  <span className="gold-text">Yarışıyor</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <div style={{ marginTop: '1rem' }}>
+            {participants.map((p) => (
+              <div className="list-row" key={p.id}>
+                <span>{p.profiles?.full_name ?? 'İsimsiz'}</span>
+                <span className={p.is_eliminated ? 'muted' : 'gold-text'}>
+                  {p.is_eliminated ? 'Elendi' : 'Yarışıyor'}
+                </span>
+              </div>
+            ))}
+          </div>
         </>
       )}
     </div>

@@ -55,17 +55,22 @@ export default function Signup() {
 
     setSubmitting(false);
     setWelcomeName(fullName);
-
-    setTimeout(() => navigate('/dashboard'), 1800);
   };
 
   if (welcomeName) {
     return (
       <div className="stage">
-        <div className="gold-text font-display" style={{ fontSize: '2.25rem' }}>
-          ARAMIZA HOŞGELDİN
+        <div className="gold-text font-display" style={{ fontSize: '2rem' }}>
+          BAŞVURUNUZ ALINDI
         </div>
         <p style={{ marginTop: '0.75rem', fontSize: '1.2rem' }}>{welcomeName}</p>
+        <p className="muted" style={{ marginTop: '1rem', maxWidth: '26rem', textAlign: 'center' }}>
+          E-posta adresinize gönderilen doğrulama bağlantısına tıklayın. Ardından üyeliğiniz
+          yönetici onayına gönderilecek. Onaylandığında yarışmalara katılabilirsiniz.
+        </p>
+        <button className="btn btn-primary" onClick={() => navigate('/')} style={{ marginTop: '1.5rem' }}>
+          Anasayfaya dön
+        </button>
       </div>
     );
   }
@@ -103,6 +108,9 @@ export default function Signup() {
             placeholder="05xx xxx xx xx"
             required
           />
+          <span className="muted" style={{ fontSize: '0.75rem', textTransform: 'none' }}>
+            Ödül kazananlara bu telefon numarası üzerinden iletişime geçilecektir.
+          </span>
         </label>
 
         <label className="field">

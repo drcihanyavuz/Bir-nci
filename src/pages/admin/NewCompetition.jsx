@@ -5,7 +5,7 @@ import { supabase } from '../../lib/supabaseClient';
 export default function NewCompetition() {
   const [title, setTitle] = useState('');
   const [startTime, setStartTime] = useState('');
-  const [maxParticipants, setMaxParticipants] = useState(1000);
+  const [maxParticipants, setMaxParticipants] = useState(100);
   const [entryCost, setEntryCost] = useState(10);
   const [prize1, setPrize1] = useState('');
   const [prize2, setPrize2] = useState('');
