@@ -43,9 +43,6 @@ export default function Dashboard() {
         <Link to="/buy-inci" className="panel-btn">
           İnci al
         </Link>
-        <Link to="/survey" className="panel-btn">
-          Anket
-        </Link>
         <Link to="/leaderboard" className="panel-btn">
           Liderlik Tablosu
         </Link>
