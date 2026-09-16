@@ -55,6 +55,9 @@ export default function AdminDashboard() {
         <Link to="/admin/pending" className="panel-btn">
           Bekleyen İşlemler
         </Link>
+        <Link to="/admin/media" className="panel-btn">
+          Görsel Ekle
+        </Link>
         <Link to="/admin/survey" className="panel-btn">
           Anket yönetimi
         </Link>
