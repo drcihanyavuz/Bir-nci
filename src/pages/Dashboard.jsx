@@ -49,6 +49,9 @@ export default function Dashboard() {
         <Link to="/leaderboard" className="panel-btn">
           🏅 Liderlik Tablosu
         </Link>
+        <Link to="/results" className="panel-btn">
+          📜 Geçmiş yarışmalar
+        </Link>
         <Link to="/chat" className="panel-btn">
           💬 Sohbet
         </Link>
