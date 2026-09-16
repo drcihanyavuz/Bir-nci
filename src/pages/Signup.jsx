@@ -33,27 +33,41 @@ export default function Signup() {
 
     const fullName = `${firstName} ${lastName}`.trim();
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
+    // Hesap oluşturmadan önce isim ve telefonun boşta olduğunu kontrol et
+    const [{ data: nameTaken }, { data: phoneTaken }] = await Promise.all([
+      supabase.rpc('is_name_taken', { p_full_name: fullName }),
+      supabase.rpc('is_phone_taken', { p_phone: phone }),
+    ]);
 
-    if (error) {
+    if (nameTaken) {
       setSubmitting(false);
-      setError(error.message);
+      setError('Bu ad-soyad ile zaten bir üyelik var.');
       return;
     }
 
-    // Telefon numarasını ve KVKK onay zamanını profile ekle
-    if (data.user) {
-      await supabase
-        .from('profiles')
-        .update({ phone, terms_accepted_at: new Date().toISOString() })
-        .eq('id', data.user.id);
+    if (phoneTaken) {
+      setSubmitting(false);
+      setError('Bu telefon numarasıyla zaten bir üyelik var.');
+      return;
     }
 
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName, phone } },
+    });
+
     setSubmitting(false);
+
+    if (error) {
+      setError(
+        error.message.includes('Database error')
+          ? 'Bu ad-soyad ya da telefon numarasıyla zaten bir üyelik var.'
+          : error.message
+      );
+      return;
+    }
+
     setWelcomeName(fullName);
   };
 
