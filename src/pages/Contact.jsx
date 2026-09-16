@@ -7,6 +7,7 @@ export default function Contact() {
   const [senderName, setSenderName] = useState('');
   const [senderEmail, setSenderEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [website, setWebsite] = useState(''); // bot tuzağı — insanlar bunu görmez/doldurmaz
   const [error, setError] = useState('');
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -14,6 +15,13 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Bot tuzağı doluysa (gerçek kullanıcılar bu alanı hiç görmez) sessizce geç
+    if (website.trim() !== '') {
+      setSent(true);
+      return;
+    }
+
     setSubmitting(true);
 
     const { error } = await supabase.from('contact_messages').insert({
@@ -26,7 +34,11 @@ export default function Contact() {
     setSubmitting(false);
 
     if (error) {
-      setError(error.message);
+      setError(
+        error.message.includes('Çok fazla mesaj')
+          ? error.message
+          : 'Mesajınız gönderilemedi. Lütfen tekrar deneyin.'
+      );
       return;
     }
 
@@ -36,7 +48,7 @@ export default function Contact() {
   if (sent) {
     return (
       <div className="stage">
-        <h1>Mesajınız iletildi</h1>
+        <h1>✅ Mesajınız iletildi</h1>
         <p className="muted" style={{ marginTop: '1rem' }}>
           En kısa sürede size dönüş yapacağız.
         </p>
@@ -46,7 +58,7 @@ export default function Contact() {
 
   return (
     <div className="page" style={{ maxWidth: '480px' }}>
-      <h1>İletişim</h1>
+      <h1>✉️ İletişim</h1>
       <p className="muted" style={{ marginTop: '0.5rem' }}>
         Bir sorunuz mu var? Bize buradan yazın.
       </p>
@@ -71,6 +83,20 @@ export default function Contact() {
           Mesajınız
           <textarea value={message} onChange={(e) => setMessage(e.target.value)} required />
         </label>
+
+        {/* Bot tuzağı: gerçek kullanıcılar görmez, botlar genelde doldurur */}
+        <div style={{ position: 'absolute', left: '-9999px' }} aria-hidden="true">
+          <label>
+            Web siteniz
+            <input
+              type="text"
+              tabIndex="-1"
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </label>
+        </div>
 
         {error && <p className="status-banner is-error">{error}</p>}
 
