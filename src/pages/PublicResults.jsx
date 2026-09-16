@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 
 export default function PublicResults() {
@@ -17,14 +18,19 @@ export default function PublicResults() {
 
   // Yarışmaya göre grupla
   const grouped = results.reduce((acc, row) => {
-    (acc[row.competition_id] ??= { title: row.competition_title, start_time: row.start_time, rows: [] });
+    (acc[row.competition_id] ??= {
+      title: row.competition_title,
+      start_time: row.start_time,
+      participantCount: row.participant_count,
+      rows: [],
+    });
     acc[row.competition_id].rows.push(row);
     return acc;
   }, {});
 
   return (
     <div className="page">
-      <h1>Yarışma sonuçları</h1>
+      <h1>🏆 Yarışma sonuçları</h1>
 
       {loading && <p className="muted" style={{ marginTop: '1rem' }}>Yükleniyor...</p>}
 
@@ -34,21 +40,31 @@ export default function PublicResults() {
         </div>
       )}
 
-      {Object.values(grouped).map((comp) => (
-        <div key={comp.title + comp.start_time} style={{ marginTop: '2rem' }}>
-          <h2>{comp.title}</h2>
-          <p className="muted">{new Date(comp.start_time).toLocaleString('tr-TR')}</p>
+      {Object.entries(grouped).map(([competitionId, comp]) => (
+        <div key={competitionId} className="form-panel" style={{ marginTop: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h2>{comp.title || 'İsimsiz yarışma'}</h2>
+            <Link to={`/results/${competitionId}`} className="btn btn-ghost">
+              Detaylar
+            </Link>
+          </div>
+          <p className="muted" style={{ marginTop: '0.25rem' }}>
+            {new Date(comp.start_time).toLocaleString('tr-TR')} · {comp.participantCount ?? '—'} katılımcı
+          </p>
 
           <div style={{ marginTop: '0.75rem' }}>
             {comp.rows
               .sort((a, b) => a.rank - b.rank)
-              .map((row) => (
-                <div className="results-row" key={row.rank}>
-                  <span className="rank-badge">{row.rank}.</span>
-                  <span style={{ flex: 1 }}>{row.full_name}</span>
-                  {row.prize && <span className="gold-text">{row.prize}</span>}
-                </div>
-              ))}
+              .map((row) => {
+                const medal = row.rank === 1 ? '👑' : row.rank === 2 ? '🥈' : '🥉';
+                return (
+                  <div className="results-row" key={row.rank}>
+                    <span className="rank-badge">{medal} {row.rank}.</span>
+                    <span style={{ flex: 1 }}>{row.full_name || 'İsimsiz üye'}</span>
+                    {row.prize && <span className="gold-text">{row.prize}</span>}
+                  </div>
+                );
+              })}
           </div>
         </div>
       ))}

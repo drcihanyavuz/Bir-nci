@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ResetPassword from './pages/ResetPassword';
 import PublicResults from './pages/PublicResults';
+import ResultsDetail from './pages/ResultsDetail';
 import LearnMore from './pages/LearnMore';
 import Leaderboard from './pages/Leaderboard';
 import SpectateList from './pages/SpectateList';
@@ -53,6 +54,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/results" element={<PublicResults />} />
+            <Route path="/results/:competitionId" element={<ResultsDetail />} />
             <Route path="/yarismayi-ogrenelim" element={<LearnMore />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/spectate" element={<SpectateList />} />
