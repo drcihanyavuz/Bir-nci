@@ -107,25 +107,25 @@ export default function PublicLanding() {
 
       <div className="landing-buttons">
         <Link to="/login" className="landing-btn">
-          Giriş yap
+          🔑 Giriş yap
         </Link>
         <Link to="/signup" className="landing-btn">
-          Üye ol
+          📝 Üye ol
         </Link>
         <Link to="/yarismayi-ogrenelim" className="landing-btn">
-          Yarışmayı Öğrenelim
+          📖 Yarışmayı Öğrenelim
         </Link>
         <Link to="/results" className="landing-btn">
-          Yarışma sonuçları
+          🏆 Yarışma sonuçları
         </Link>
         <Link to="/leaderboard" className="landing-btn">
-          Liderlik Tablosu
+          🏅 Liderlik Tablosu
         </Link>
         <Link to="/spectate" className="landing-btn">
-          Yarışmayı İzle
+          👀 Yarışmayı İzle
         </Link>
         <Link to="/contact" className="landing-btn">
-          İletişim
+          ✉️ İletişim
         </Link>
       </div>
     </div>

@@ -199,6 +199,7 @@ textarea:focus-visible {
 /* ---- Butonlar ---- */
 
 .btn {
+  text-transform: uppercase;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -326,6 +327,7 @@ textarea:focus-visible {
 }
 
 .option-btn {
+  text-transform: uppercase;
   background: var(--btn-blue);
   border: 1px solid var(--border-subtle);
   color: var(--pearl);
@@ -468,6 +470,7 @@ textarea:focus-visible {
 }
 
 .landing-btn {
+  text-transform: uppercase;
   background: var(--btn-blue);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -507,6 +510,7 @@ textarea:focus-visible {
 }
 
 .panel-btn {
+  text-transform: uppercase;
   background: var(--btn-blue);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);

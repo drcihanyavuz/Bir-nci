@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 
 export default function AdminLiveMonitor() {
@@ -45,7 +46,11 @@ export default function AdminLiveMonitor() {
 
   return (
     <div className="page-wide">
-      <h1>Canlı izleme</h1>
+      <h1>🔴 Canlı izleme</h1>
+
+      <p style={{ marginTop: '0.75rem' }}>
+        <Link to="/admin/tiebreak">❓ Ek soru bekleyen yarışmalar</Link>
+      </p>
 
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem' }}>
         {competitions.map((c) => (

@@ -38,25 +38,28 @@ export default function Dashboard() {
 
       <div className="panel-grid">
         <Link to="/competitions" className="panel-btn">
-          Yarışmaya katıl
+          🏆 Yarışmaya katıl
         </Link>
         <Link to="/buy-inci" className="panel-btn">
-          İnci al
+          💎 İnci al
+        </Link>
+        <Link to="/yarismayi-ogrenelim" className="panel-btn">
+          📖 Yarışmayı Öğrenelim
         </Link>
         <Link to="/leaderboard" className="panel-btn">
-          Liderlik Tablosu
+          🏅 Liderlik Tablosu
         </Link>
         <Link to="/chat" className="panel-btn">
-          Sohbet
+          💬 Sohbet
         </Link>
         <button className="panel-btn" onClick={handleInvite}>
-          Davet et
+          📨 Davet et
         </button>
         <Link to="/profile" className="panel-btn">
-          Profilim
+          👤 Profilim
         </Link>
         <button className="panel-btn" onClick={handleSignOut}>
-          Çıkış
+          🚪 Çıkış
         </button>
       </div>
     </div>

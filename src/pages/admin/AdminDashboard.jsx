@@ -44,49 +44,45 @@ export default function AdminDashboard() {
 
       <div className="panel-grid">
         <Link to="/admin/competitions/new" className="panel-btn">
-          Yarışma oluştur
+          🆕 Yarışma oluştur
         </Link>
         <Link to="/admin/packages" className="panel-btn">
-          İnci ayarları
+          💰 İnci ayarları
         </Link>
         <Link to="/admin/users" className="panel-btn">
-          Üyeler
+          👥 Üyeler
         </Link>
         <Link to="/admin/pending" className="panel-btn">
-          Bekleyen İşlemler
+          ⏳ Bekleyen İşlemler
         </Link>
         <Link to="/admin/media" className="panel-btn">
-          Görsel Ekle
+          🖼️ Görsel Ekle
         </Link>
         <Link to="/admin/survey" className="panel-btn">
-          Anket yönetimi
+          📊 Anket yönetimi
         </Link>
         <Link to="/admin/past-competitions" className="panel-btn">
-          Geçmiş yarışmalar
+          📜 Geçmiş yarışmalar
         </Link>
         <Link to="/admin/live-monitor" className="panel-btn">
-          Canlı izleme
+          🔴 Canlı izleme
         </Link>
         <Link to="/admin/stats" className="panel-btn">
-          İstatistikler
+          📈 İstatistikler
         </Link>
         <Link to="/admin/contact-messages" className="panel-btn">
-          Mesajlar
+          ✉️ Mesajlar
         </Link>
         <Link to="/admin/chat" className="panel-btn">
-          Sohbet
+          💬 Sohbet
         </Link>
         <button className="panel-btn" onClick={handleInvite}>
-          Davet et
+          📨 Davet et
         </button>
         <button className="panel-btn" onClick={handleSignOut}>
-          Çıkış
+          🚪 Çıkış
         </button>
       </div>
-
-      <p style={{ marginTop: '2rem' }}>
-        <Link to="/admin/tiebreak" className="muted">Ek soru bekleyen yarışmalar</Link>
-      </p>
 
       {upcoming.length > 0 && (
         <div style={{ marginTop: '2rem', textAlign: 'left' }}>
