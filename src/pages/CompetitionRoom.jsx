@@ -5,6 +5,7 @@ import { useCompetition } from '../hooks/useCompetition';
 import { useMyParticipant } from '../hooks/useMyParticipant';
 import { useCurrentQuestion } from '../hooks/useCurrentQuestion';
 import { playGongSound } from '../lib/sound';
+import { burstConfetti } from '../lib/confetti';
 
 const REVEAL_DURATION_SECONDS = 20;
 
@@ -32,6 +33,10 @@ export default function CompetitionRoom() {
   const revealCalled = useRef(false);
   const revealFetchedForQuestion = useRef(null);
   const gongPlayedForQuestion = useRef(null);
+  const confettiPlayedForQuestion = useRef(null);
+  const correctRowRef = useRef(null);
+  const [results, setResults] = useState(null);
+  const finishedConfettiPlayed = useRef(false);
   const [lobbySecondsLeft, setLobbySecondsLeft] = useState(null);
 
   // Aktif katılımcı sayısını her yeni soruda tazele
@@ -160,7 +165,40 @@ export default function CompetitionRoom() {
     return () => clearInterval(interval);
   }, [question, competitionId]);
 
-  // (Alkış sesi artık kullanılmıyor — süre dolunca gong çalıyor.)
+  // Sonuçlar açıklanınca, doğru şıkkın üzerinde konfeti patlat
+  useEffect(() => {
+    if (revealData && confettiPlayedForQuestion.current !== question?.id) {
+      confettiPlayedForQuestion.current = question?.id;
+      requestAnimationFrame(() => {
+        const rect = correctRowRef.current?.getBoundingClientRect();
+        if (rect) {
+          burstConfetti({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
+        } else {
+          burstConfetti();
+        }
+      });
+    }
+  }, [revealData, question?.id]);
+
+  // Yarışma bitince ilk 3'ü çek ve konfeti patlat
+  useEffect(() => {
+    if (competition?.status !== 'finished') return;
+
+    supabase
+      .from('public_results')
+      .select('*')
+      .eq('competition_id', competitionId)
+      .order('rank')
+      .then(({ data }) => {
+        setResults(data ?? []);
+        if (!finishedConfettiPlayed.current) {
+          finishedConfettiPlayed.current = true;
+          burstConfetti();
+          setTimeout(() => burstConfetti({ x: window.innerWidth * 0.25, y: window.innerHeight * 0.35 }), 300);
+          setTimeout(() => burstConfetti({ x: window.innerWidth * 0.75, y: window.innerHeight * 0.35 }), 600);
+        }
+      });
+  }, [competition?.status, competitionId]);
 
   const handleAnswer = async (option) => {
     if (hasAnswered || secondsLeft === 0) return;
@@ -243,8 +281,28 @@ export default function CompetitionRoom() {
   if (competition.status === 'finished') {
     return (
       <div className="stage">
-        <div className="gold-text font-display" style={{ fontSize: '3rem' }}>Yarışma bitti</div>
-        <p className="muted" style={{ marginTop: '1rem' }}>Tebrikler, hayatta kaldınız! Sonuçlar yakında ekrana yansıyacak.</p>
+        <div className="gold-text font-display" style={{ fontSize: '2.5rem' }}>🎉 Yarışma bitti! 🎉</div>
+
+        {!results && <p className="muted" style={{ marginTop: '1rem' }}>Sonuçlar hesaplanıyor...</p>}
+
+        {results && results.length === 0 && (
+          <p className="muted" style={{ marginTop: '1rem' }}>Bu yarışmada bir kazanan belirlenemedi.</p>
+        )}
+
+        {results && results.length > 0 && (
+          <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '28rem' }}>
+            {results.map((r) => {
+              const medal = r.rank === 1 ? '👑' : r.rank === 2 ? '🥈' : '🥉';
+              return (
+                <div className="results-row" key={r.rank}>
+                  <span className="rank-badge">{medal} {r.rank}.</span>
+                  <span style={{ flex: 1 }}>{r.full_name}</span>
+                  {r.prize && <span className="gold-text">{r.prize}</span>}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
@@ -340,7 +398,11 @@ export default function CompetitionRoom() {
               const pct = totalVotes === 0 ? 0 : Math.round((votes / totalVotes) * 100);
               const isCorrect = correctOption === opt;
               return (
-                <div key={opt} className={`reveal-row ${isCorrect ? 'is-correct' : ''}`}>
+                <div
+                  key={opt}
+                  ref={isCorrect ? correctRowRef : null}
+                  className={`reveal-row ${isCorrect ? 'is-correct' : ''}`}
+                >
                   <div className="reveal-fill" style={{ width: `${pct}%` }} />
                   <div className="reveal-content">
                     <span>
