@@ -76,6 +76,9 @@ export default function AdminDashboard() {
         <Link to="/admin/chat" className="panel-btn">
           💬 Sohbet
         </Link>
+        <Link to="/profile" className="panel-btn">
+          👤 Profilim
+        </Link>
         <button className="panel-btn" onClick={handleInvite}>
           📨 Davet et
         </button>
