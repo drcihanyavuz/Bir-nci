@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
+import AnnouncementsPanel from '../components/AnnouncementsPanel';
 
 const APP_URL = 'https://birincim.vercel.app';
 
@@ -30,6 +31,8 @@ export default function Dashboard() {
 
   return (
     <div className="page" style={{ textAlign: 'center' }}>
+      <AnnouncementsPanel />
+
       {profile && !profile.approved_at && (
         <div className="status-banner is-error" style={{ marginBottom: '1.5rem' }}>
           Üyeliğiniz yönetici onayı bekliyor. Onaylandığında yarışmalara katılabilirsiniz.

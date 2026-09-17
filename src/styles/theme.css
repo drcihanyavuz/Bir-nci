@@ -854,18 +854,21 @@ textarea:focus-visible {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- Bloknot / Duyuru (tek kart, gezinmeli) ---- */
+/* ---- Bloknot / Duyuru (elle kaydırmalı, tek tek) ---- */
 
-.announcements-wrap {
+.announcements-strip {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: visible;
   padding: 1.5rem 1rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
 .announcement-note-single {
-  width: 100%;
-  max-width: 420px;
+  flex: 0 0 100%;
+  scroll-snap-align: center;
   min-height: 200px;
   background: var(--btn-blue);
   color: var(--pearl);
@@ -877,6 +880,12 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+@media (min-width: 480px) {
+  .announcement-note-single {
+    flex-basis: 380px;
+  }
 }
 
 .announcement-pin {
@@ -901,16 +910,4 @@ textarea:focus-visible {
   line-height: 1.5;
   text-transform: none;
   white-space: pre-wrap;
-}
-
-.announcement-nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.announcement-nav button {
-  font-size: 1.3rem;
-  padding: 0.4rem 0.9rem;
 }
