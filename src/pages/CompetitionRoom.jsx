@@ -47,6 +47,20 @@ export default function CompetitionRoom() {
       .then(({ data }) => setActiveCount(data));
   }, [competitionId, question?.id]);
 
+  // Yarışma henüz başlamadıysa (scheduled), kota durumunu göstermek
+  // için katılımcı sayısını birkaç saniyede bir tazele.
+  useEffect(() => {
+    if (competition?.status !== 'scheduled' || !competitionId) return;
+    const refresh = () => {
+      supabase
+        .rpc('get_active_participant_count', { p_competition_id: competitionId })
+        .then(({ data }) => setActiveCount(data));
+    };
+    refresh();
+    const interval = setInterval(refresh, 3000);
+    return () => clearInterval(interval);
+  }, [competition?.status, competitionId]);
+
   // Hazırlık (lobby) ekranındayken katılımcı sayısını birkaç saniyede
   // bir tazele — insanlar bu sırada da katılabiliyor.
   useEffect(() => {
@@ -246,12 +260,27 @@ export default function CompetitionRoom() {
   }
 
   if (competition.status === 'scheduled') {
+    const startTimePassed = new Date(competition.start_time).getTime() <= Date.now();
+    const quorumNeeded = Math.ceil(competition.max_participants * 0.5);
+    const quorumMet = (activeCount ?? 0) >= quorumNeeded;
+
     return (
       <div className="stage">
         <h1>{competition.title}</h1>
-        <p className="muted" style={{ marginTop: '1rem' }}>
-          Yarışma henüz başlamadı. Başlangıç: {new Date(competition.start_time).toLocaleString('tr-TR')}
-        </p>
+        {startTimePassed && !quorumMet ? (
+          <>
+            <p className="status-banner is-error" style={{ marginTop: '1rem', fontWeight: 700 }}>
+              YARIŞMANIN BAŞLAMASI İÇİN %50 ÇOĞUNLUK BEKLENMEKTEDİR.
+            </p>
+            <p className="muted" style={{ marginTop: '0.5rem' }}>
+              {activeCount ?? '...'} / {quorumNeeded} kişi (gerekli asgari katılım)
+            </p>
+          </>
+        ) : (
+          <p className="muted" style={{ marginTop: '1rem' }}>
+            Yarışma henüz başlamadı. Başlangıç: {new Date(competition.start_time).toLocaleString('tr-TR')}
+          </p>
+        )}
       </div>
     );
   }
