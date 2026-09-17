@@ -42,17 +42,24 @@ import AdminPastCompetitions from './pages/admin/AdminPastCompetitions';
 import AdminLiveMonitor from './pages/admin/AdminLiveMonitor';
 import AdminStats from './pages/admin/AdminStats';
 import ProfileEdit from './pages/ProfileEdit';
+import SplashScreen from './components/SplashScreen';
+import { useAuth } from './context/AuthContext';
 
-export default function App() {
+function AppGate() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return <SplashScreen />;
+  }
+
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            {/* Herkese açık sayfalar */}
-            <Route path="/" element={<PublicLanding />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+    <BrowserRouter>
+      <AppLayout>
+        <Routes>
+          {/* Herkese açık sayfalar */}
+          <Route path="/" element={<PublicLanding />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/results" element={<PublicResults />} />
             <Route path="/results/:competitionId" element={<ResultsDetail />} />
@@ -292,8 +299,15 @@ export default function App() {
               }
             />
           </Routes>
-        </AppLayout>
-      </BrowserRouter>
+      </AppLayout>
+    </BrowserRouter>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppGate />
     </AuthProvider>
   );
 }
