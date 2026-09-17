@@ -853,3 +853,49 @@ textarea:focus-visible {
   from { opacity: 0; transform: translateY(-8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---- Bloknot / Duyuru şeridi ---- */
+
+.announcements-strip {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  padding: 1.5rem 1rem;
+  scroll-snap-type: x proximity;
+}
+
+.announcement-note {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 220px;
+  min-height: 140px;
+  background: #fff6d8;
+  color: #2a2410;
+  border-radius: 4px;
+  padding: 1.25rem 1rem 1rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  position: relative;
+  font-family: 'Manrope', sans-serif;
+}
+
+.announcement-pin {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+}
+
+.announcement-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+.announcement-content {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-transform: none;
+  white-space: pre-wrap;
+}

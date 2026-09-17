@@ -58,6 +58,9 @@ export default function AdminDashboard() {
         <Link to="/admin/media" className="panel-btn">
           🖼️ Görsel Ekle
         </Link>
+        <Link to="/admin/announcements" className="panel-btn">
+          📌 Bloknotlar
+        </Link>
         <Link to="/admin/survey" className="panel-btn">
           📊 Anket yönetimi
         </Link>

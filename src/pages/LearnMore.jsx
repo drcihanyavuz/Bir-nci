@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import AnnouncementsPanel from '../components/AnnouncementsPanel';
 
 function isVideoUrl(url) {
   return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url || '');
@@ -24,6 +25,8 @@ export default function LearnMore() {
   return (
     <div className="page" style={{ textAlign: 'center' }}>
       <h1>📖 Yarışmayı Öğrenelim</h1>
+
+      <AnnouncementsPanel />
 
       {loading ? (
         <p className="muted" style={{ marginTop: '1.5rem' }}>Yükleniyor...</p>

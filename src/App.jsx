@@ -35,6 +35,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminUserDetail from './pages/admin/AdminUserDetail';
 import AdminPending from './pages/admin/AdminPending';
 import AdminMedia from './pages/admin/AdminMedia';
+import AdminAnnouncements from './pages/admin/AdminAnnouncements';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminContactMessages from './pages/admin/AdminContactMessages';
 import AdminPastCompetitions from './pages/admin/AdminPastCompetitions';
@@ -276,6 +277,16 @@ export default function App() {
                 <ProtectedRoute>
                   <AdminRoute>
                     <AdminMedia />
+                  </AdminRoute>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/announcements"
+              element={
+                <ProtectedRoute>
+                  <AdminRoute>
+                    <AdminAnnouncements />
                   </AdminRoute>
                 </ProtectedRoute>
               }
