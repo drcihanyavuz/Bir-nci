@@ -854,48 +854,63 @@ textarea:focus-visible {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- Bloknot / Duyuru şeridi ---- */
+/* ---- Bloknot / Duyuru (tek kart, gezinmeli) ---- */
 
-.announcements-strip {
+.announcements-wrap {
   display: flex;
-  gap: 1.25rem;
-  overflow-x: auto;
+  flex-direction: column;
+  align-items: center;
   padding: 1.5rem 1rem;
-  scroll-snap-type: x proximity;
 }
 
-.announcement-note {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-  width: 220px;
-  min-height: 140px;
-  background: #fff6d8;
-  color: #2a2410;
-  border-radius: 4px;
-  padding: 1.25rem 1rem 1rem;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+.announcement-note-single {
+  width: 100%;
+  max-width: 420px;
+  min-height: 200px;
+  background: var(--btn-blue);
+  color: var(--pearl);
+  border-radius: 6px;
+  padding: 2.25rem 1.75rem 1.75rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
   position: relative;
   font-family: 'Manrope', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .announcement-pin {
   position: absolute;
-  top: -14px;
+  top: -18px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 1.4rem;
+  font-size: 1.8rem;
 }
 
 .announcement-title {
   font-family: 'Fraunces', serif;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
 }
 
 .announcement-content {
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.5;
   text-transform: none;
   white-space: pre-wrap;
+}
+
+.announcement-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.announcement-nav button {
+  font-size: 1.3rem;
+  padding: 0.4rem 0.9rem;
 }
