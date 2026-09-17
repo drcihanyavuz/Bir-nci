@@ -52,6 +52,9 @@ export default function Dashboard() {
         <Link to="/results" className="panel-btn">
           📜 Geçmiş yarışmalar
         </Link>
+        <Link to="/spectate" className="panel-btn">
+          👀 Yarışmayı İzle
+        </Link>
         <Link to="/chat" className="panel-btn">
           💬 Sohbet
         </Link>

@@ -116,7 +116,7 @@ export default function PublicLanding() {
           📖 Yarışmayı Öğrenelim
         </Link>
         <Link to="/results" className="landing-btn">
-          🏆 Yarışma sonuçları
+          🏆 Geçmiş yarışmalar
         </Link>
         <Link to="/leaderboard" className="landing-btn">
           🏅 Liderlik Tablosu
