@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { enablePushNotifications } from '../lib/push';
 
 export default function ProfileEdit() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(true);
@@ -12,6 +14,31 @@ export default function ProfileEdit() {
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
   const [pushMessage, setPushMessage] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('Hesabınızı kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz; inci bakiyeniz, geçmiş katılımlarınız ve mesajlarınız da silinecektir.')) {
+      return;
+    }
+    if (!window.confirm('Son bir kez soruyoruz: hesabınızı silmek istediğinizden kesinlikle emin misiniz?')) {
+      return;
+    }
+
+    setDeleting(true);
+    setDeleteError('');
+
+    const { data, error } = await supabase.functions.invoke('delete-account');
+
+    if (error || data?.error) {
+      setDeleting(false);
+      setDeleteError(data?.error || error.message);
+      return;
+    }
+
+    await signOut();
+    navigate('/');
+  };
 
   const handleEnablePush = async () => {
     setPushMessage('');
@@ -92,6 +119,17 @@ export default function ProfileEdit() {
           Bildirimleri Aç
         </button>
         {pushMessage && <p className="muted" style={{ marginTop: '0.5rem' }}>{pushMessage}</p>}
+      </div>
+
+      <div className="form-panel" style={{ marginTop: '1.5rem' }}>
+        <h2>Tehlikeli bölge</h2>
+        <p className="muted" style={{ marginTop: '0.5rem' }}>
+          Hesabınızı kalıcı olarak silebilirsiniz. Bu işlem geri alınamaz.
+        </p>
+        {deleteError && <p className="status-banner is-error" style={{ marginTop: '0.5rem' }}>{deleteError}</p>}
+        <button className="btn btn-ghost" onClick={handleDeleteAccount} disabled={deleting} style={{ marginTop: '0.75rem' }}>
+          {deleting ? 'Siliniyor...' : 'Hesabımı Sil'}
+        </button>
       </div>
     </div>
   );
