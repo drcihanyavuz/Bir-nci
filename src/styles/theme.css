@@ -870,8 +870,8 @@ textarea:focus-visible {
   flex: 0 0 100%;
   scroll-snap-align: center;
   min-height: 200px;
-  background: var(--btn-blue);
-  color: var(--pearl);
+  background: #5b21b6;
+  color: #ff8c1a;
   border-radius: 6px;
   padding: 2.25rem 1.75rem 1.75rem;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
@@ -910,4 +910,9 @@ textarea:focus-visible {
   line-height: 1.5;
   text-transform: none;
   white-space: pre-wrap;
+}
+
+.announcement-button-name {
+  font-weight: 800;
+  color: #ffe066;
 }
