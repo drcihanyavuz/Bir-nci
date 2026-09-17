@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -47,8 +48,14 @@ import { useAuth } from './context/AuthContext';
 
 function AppGate() {
   const { loading } = useAuth();
+  const [minimumTimePassed, setMinimumTimePassed] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    const timer = setTimeout(() => setMinimumTimePassed(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading || !minimumTimePassed) {
     return <SplashScreen />;
   }
 
