@@ -306,7 +306,7 @@ function AppGate() {
   const [minimumTimePassed, setMinimumTimePassed] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMinimumTimePassed(true), 3000);
+    const timer = setTimeout(() => setMinimumTimePassed(true), 2000);
     return () => clearTimeout(timer);
   }, []);
 
