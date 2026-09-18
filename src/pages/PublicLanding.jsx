@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import Mascot from '../components/Mascot';
 import AnnouncementsPanel from '../components/AnnouncementsPanel';
+import InstallBanner from '../components/InstallBanner';
 
 function useCountdown(targetDate) {
   const [remaining, setRemaining] = useState(null);
@@ -80,6 +81,7 @@ export default function PublicLanding() {
 
   return (
     <div className="landing">
+      <InstallBanner />
       <AnnouncementsPanel />
       <Mascot />
       <img src="/logo-full.png" alt="BirİNCİ Bilgi Yarışması" style={{ width: '180px', maxWidth: '70%' }} />

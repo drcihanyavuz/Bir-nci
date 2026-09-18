@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
 import AnnouncementsPanel from '../components/AnnouncementsPanel';
+import InstallBanner from '../components/InstallBanner';
 
 const APP_URL = 'https://birincim.vercel.app';
 
@@ -31,6 +32,7 @@ export default function Dashboard() {
 
   return (
     <div className="page" style={{ textAlign: 'center' }}>
+      <InstallBanner />
       <AnnouncementsPanel />
 
       {profile && !profile.approved_at && (
