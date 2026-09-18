@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../hooks/useProfile';
+import { useCountUp } from '../hooks/useCountUp';
 
 export default function AppLayout({ children }) {
   const { user } = useAuth();
   const { profile } = useProfile();
+  const animatedBalance = useCountUp(profile?.inci_balance);
 
   return (
     <div>
@@ -17,7 +19,7 @@ export default function AppLayout({ children }) {
           <span className="user-chip" style={{ textAlign: 'right' }}>
             <div>{profile?.full_name ?? ''}</div>
             <div className="muted" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
-              Hazine : {profile?.inci_balance ?? '...'}
+              Hazine : {profile ? animatedBalance : '...'}
             </div>
           </span>
         )}

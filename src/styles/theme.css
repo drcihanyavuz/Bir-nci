@@ -916,3 +916,28 @@ textarea:focus-visible {
   font-weight: 800;
   color: #ffe066;
 }
+
+/* ---- Sayfa geçiş animasyonu ---- */
+.page-transition {
+  animation: page-fade-in 0.28s ease-out;
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- İskelet yükleme ---- */
+.skeleton-row {
+  height: 3.2rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-surface-raised) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

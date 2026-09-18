@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useProfile } from '../hooks/useProfile';
+import { useCountUp } from '../hooks/useCountUp';
+import { SkeletonList } from '../components/Skeleton';
 
 export default function CompetitionList() {
   const { profile } = useProfile();
+  const animatedBalance = useCountUp(profile?.inci_balance);
   const [competitions, setCompetitions] = useState([]);
   const [myParticipantRows, setMyParticipantRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +39,7 @@ export default function CompetitionList() {
     <div className="page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>Yarışmalar</h1>
-        <span className="balance-pill">✦ {profile?.inci_balance ?? '...'} inci</span>
+        <span className="balance-pill">✦ {profile ? animatedBalance : '...'} inci</span>
       </div>
 
       {profile?.is_admin && (
@@ -45,7 +48,7 @@ export default function CompetitionList() {
         </p>
       )}
 
-      {loading && <p className="muted" style={{ marginTop: '1.5rem' }}>Yükleniyor...</p>}
+      {loading && <SkeletonList count={5} />}
 
       {!loading && competitions.length === 0 && (
         <div className="empty-state" style={{ marginTop: '1.5rem' }}>

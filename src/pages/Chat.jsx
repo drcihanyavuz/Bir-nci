@@ -111,12 +111,17 @@ function SurveyTab() {
   );
 }
 
+const MESSAGES_PAGE_SIZE = 50;
+
 function ChatTab() {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [hasOlder, setHasOlder] = useState(false);
   const bottomRef = useRef(null);
+  const firstLoadDone = useRef(false);
 
   useEffect(() => {
     if (!user) return;
@@ -125,8 +130,14 @@ function ChatTab() {
       .from('chat_messages')
       .select('*')
       .eq('user_id', user.id)
-      .order('created_at')
-      .then(({ data }) => setMessages(data ?? []));
+      .order('created_at', { ascending: false })
+      .limit(MESSAGES_PAGE_SIZE)
+      .then(({ data }) => {
+        const ordered = (data ?? []).slice().reverse();
+        setMessages(ordered);
+        setHasOlder((data ?? []).length === MESSAGES_PAGE_SIZE);
+        firstLoadDone.current = true;
+      });
 
     const channel = supabase
       .channel(`chat-${user.id}`)
@@ -146,8 +157,29 @@ function ChatTab() {
   }, [user]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (firstLoadDone.current) {
+      bottomRef.current?.scrollIntoView();
+      firstLoadDone.current = false;
+    }
   }, [messages]);
+
+  const handleLoadOlder = async () => {
+    if (messages.length === 0) return;
+    setLoadingOlder(true);
+
+    const { data } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('user_id', user.id)
+      .lt('created_at', messages[0].created_at)
+      .order('created_at', { ascending: false })
+      .limit(MESSAGES_PAGE_SIZE);
+
+    const older = (data ?? []).slice().reverse();
+    setMessages((prev) => [...older, ...prev]);
+    setHasOlder((data ?? []).length === MESSAGES_PAGE_SIZE);
+    setLoadingOlder(false);
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -162,6 +194,7 @@ function ChatTab() {
 
     setText('');
     setSending(false);
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
   };
 
   return (
@@ -169,6 +202,11 @@ function ChatTab() {
       <p className="muted" style={{ marginTop: '1rem' }}>Sorularınızı doğrudan bize yazabilirsiniz.</p>
 
       <div className="chat-window" style={{ marginTop: '1rem' }}>
+        {hasOlder && (
+          <button className="btn btn-ghost" onClick={handleLoadOlder} disabled={loadingOlder} style={{ marginBottom: '0.75rem' }}>
+            {loadingOlder ? 'Yükleniyor...' : 'Daha eski mesajları göster'}
+          </button>
+        )}
         {messages.map((m) => (
           <div
             key={m.id}

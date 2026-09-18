@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -46,22 +46,12 @@ import ProfileEdit from './pages/ProfileEdit';
 import SplashScreen from './components/SplashScreen';
 import { useAuth } from './context/AuthContext';
 
-function AppGate() {
-  const { loading } = useAuth();
-  const [minimumTimePassed, setMinimumTimePassed] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMinimumTimePassed(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading || !minimumTimePassed) {
-    return <SplashScreen />;
-  }
+function AppShell() {
+  const location = useLocation();
 
   return (
-    <BrowserRouter>
-      <AppLayout>
+    <AppLayout>
+      <div key={location.pathname} className="page-transition">
         <Routes>
           {/* Herkese açık sayfalar */}
           <Route path="/" element={<PublicLanding />} />
@@ -306,7 +296,27 @@ function AppGate() {
               }
             />
           </Routes>
-      </AppLayout>
+      </div>
+    </AppLayout>
+  );
+}
+
+function AppGate() {
+  const { loading } = useAuth();
+  const [minimumTimePassed, setMinimumTimePassed] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMinimumTimePassed(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading || !minimumTimePassed) {
+    return <SplashScreen />;
+  }
+
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   );
 }

@@ -3,6 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../context/AuthContext';
 
+const MESSAGES_PAGE_SIZE = 50;
+// Konuşma listesini oluştururken en fazla bu kadar son mesaja bakılır
+// (tüm tabloyu çekmek yerine) — en aktif konuşmalar zaten en üstte çıkar.
+const THREAD_SCAN_LIMIT = 500;
+
 export default function AdminChat() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -10,13 +15,17 @@ export default function AdminChat() {
   const [selectedUserId, setSelectedUserId] = useState(searchParams.get('user'));
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [hasOlder, setHasOlder] = useState(false);
   const bottomRef = useRef(null);
+  const firstLoadDone = useRef(false);
 
   const loadThreads = async () => {
     const { data } = await supabase
       .from('chat_messages')
       .select('user_id, message, created_at, profiles!chat_messages_user_id_fkey(full_name)')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(THREAD_SCAN_LIMIT);
 
     const seen = new Set();
     const list = [];
@@ -49,8 +58,14 @@ export default function AdminChat() {
       .from('chat_messages')
       .select('*')
       .eq('user_id', selectedUserId)
-      .order('created_at')
-      .then(({ data }) => setMessages(data ?? []));
+      .order('created_at', { ascending: false })
+      .limit(MESSAGES_PAGE_SIZE)
+      .then(({ data }) => {
+        const ordered = (data ?? []).slice().reverse();
+        setMessages(ordered);
+        setHasOlder((data ?? []).length === MESSAGES_PAGE_SIZE);
+        firstLoadDone.current = true;
+      });
 
     const channel = supabase
       .channel(`admin-chat-${selectedUserId}`)
@@ -70,8 +85,29 @@ export default function AdminChat() {
   }, [selectedUserId]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (firstLoadDone.current) {
+      bottomRef.current?.scrollIntoView();
+      firstLoadDone.current = false;
+    }
   }, [messages]);
+
+  const handleLoadOlder = async () => {
+    if (messages.length === 0) return;
+    setLoadingOlder(true);
+
+    const { data } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('user_id', selectedUserId)
+      .lt('created_at', messages[0].created_at)
+      .order('created_at', { ascending: false })
+      .limit(MESSAGES_PAGE_SIZE);
+
+    const older = (data ?? []).slice().reverse();
+    setMessages((prev) => [...older, ...prev]);
+    setHasOlder((data ?? []).length === MESSAGES_PAGE_SIZE);
+    setLoadingOlder(false);
+  };
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -84,6 +120,7 @@ export default function AdminChat() {
     });
 
     setText('');
+    setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
   };
 
   return (
@@ -111,6 +148,11 @@ export default function AdminChat() {
           {selectedUserId && (
             <>
               <div className="chat-window">
+                {hasOlder && (
+                  <button className="btn btn-ghost" onClick={handleLoadOlder} disabled={loadingOlder} style={{ marginBottom: '0.75rem' }}>
+                    {loadingOlder ? 'Yükleniyor...' : 'Daha eski mesajları göster'}
+                  </button>
+                )}
                 {messages.map((m) => (
                   <div
                     key={m.id}

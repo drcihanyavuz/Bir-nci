@@ -1,21 +1,40 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { SkeletonList } from '../components/Skeleton';
+
+const PAGE_SIZE = 50;
 
 export default function Leaderboard() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    supabase
+  const loadPage = async (from) => {
+    const { data } = await supabase
       .from('public_leaderboard')
       .select('*')
       .order('points', { ascending: false })
       .order('full_name', { ascending: true })
-      .then(({ data }) => {
-        setRows(data ?? []);
-        setLoading(false);
-      });
+      .range(from, from + PAGE_SIZE - 1);
+
+    setHasMore((data ?? []).length === PAGE_SIZE);
+    return data ?? [];
+  };
+
+  useEffect(() => {
+    loadPage(0).then((data) => {
+      setRows(data);
+      setLoading(false);
+    });
   }, []);
+
+  const handleLoadMore = async () => {
+    setLoadingMore(true);
+    const more = await loadPage(rows.length);
+    setRows((prev) => [...prev, ...more]);
+    setLoadingMore(false);
+  };
 
   return (
     <div className="page">
@@ -24,7 +43,7 @@ export default function Leaderboard() {
         Tüm yarışmalar boyunca verilen doğru cevapların toplamına göre.
       </p>
 
-      {loading && <p className="muted" style={{ marginTop: '1rem' }}>Yükleniyor...</p>}
+      {loading && <SkeletonList count={8} />}
 
       {!loading && (
         <div style={{ marginTop: '1.5rem' }}>
@@ -38,6 +57,12 @@ export default function Leaderboard() {
               </div>
             );
           })}
+
+          {hasMore && (
+            <button className="btn btn-ghost" onClick={handleLoadMore} disabled={loadingMore} style={{ marginTop: '1rem' }}>
+              {loadingMore ? 'Yükleniyor...' : 'Daha fazla göster'}
+            </button>
+          )}
         </div>
       )}
     </div>
