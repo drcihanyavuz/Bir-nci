@@ -6,6 +6,7 @@ import { useMyParticipant } from '../hooks/useMyParticipant';
 import { useCurrentQuestion } from '../hooks/useCurrentQuestion';
 import { playGongSound } from '../lib/sound';
 import { burstConfetti } from '../lib/confetti';
+import DaisyCountdown from '../components/DaisyCountdown';
 
 const REVEAL_DURATION_SECONDS = 20;
 
@@ -385,9 +386,10 @@ export default function CompetitionRoom() {
           </div>
         </div>
 
-        <div className="room-central-countdown">
-          {isRevealing ? revealCountdown : (secondsLeft ?? '...')}
-        </div>
+        <DaisyCountdown
+          total={isRevealing ? REVEAL_DURATION_SECONDS : (question.time_limit_seconds || 15)}
+          remaining={isRevealing ? revealCountdown : (secondsLeft ?? 0)}
+        />
         {isRevealing && (
           <p style={{ textAlign: 'center', marginTop: '-0.75rem', fontWeight: 700, letterSpacing: '0.03em' }}>
             SIRADAKİ SORU GELİYOR

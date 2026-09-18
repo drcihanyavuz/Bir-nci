@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useCompetition } from '../hooks/useCompetition';
 import { useSpectatorQuestion } from '../hooks/useSpectatorQuestion';
+import DaisyCountdown from '../components/DaisyCountdown';
 
 function isVideoUrl(url) {
   return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url || '');
@@ -110,7 +111,9 @@ export default function Spectate() {
           </div>
         </div>
 
-        <div className="room-central-countdown">{isRevealing ? '' : (secondsLeft ?? '...')}</div>
+        {!isRevealing && (
+          <DaisyCountdown total={question.time_limit_seconds || 15} remaining={secondsLeft ?? 0} />
+        )}
 
         {question.image_url && (
           isVideoUrl(question.image_url) ? (
