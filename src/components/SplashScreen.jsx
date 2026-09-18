@@ -28,8 +28,8 @@ export default function SplashScreen() {
         src="/icon-symbol.png"
         alt="BirİNCİ"
         style={{
-          width: '140px',
-          maxWidth: '38vw',
+          width: '280px',
+          maxWidth: '76vw',
           position: 'relative',
           zIndex: 2,
           filter: 'drop-shadow(0 16px 18px rgba(120,40,80,0.18))',
@@ -37,11 +37,11 @@ export default function SplashScreen() {
       />
 
       <div style={{ marginTop: '1.75rem', position: 'relative', zIndex: 2, textAlign: 'center' }}>
-        <div style={{ fontFamily: "'Fraunces', serif", fontSize: '2.4rem', fontWeight: 600, color: '#1e3a8a' }}>
+        <div style={{ fontFamily: "'Fraunces', serif", fontSize: 'clamp(2.6rem, 13vw, 4.8rem)', fontWeight: 600, color: '#1e3a8a', whiteSpace: 'nowrap' }}>
           Bir<span style={{ color: '#d9722e' }}>İ</span>NCİ
         </div>
-        <div style={{ width: '46px', height: '4px', background: '#ffd500', borderRadius: '2px', margin: '0.6rem auto 0.85rem' }} />
-        <div style={{ fontSize: '0.8rem', letterSpacing: '0.2em', color: '#7a5f70', textTransform: 'uppercase' }}>
+        <div style={{ width: '92px', height: '8px', background: '#ffd500', borderRadius: '4px', margin: '0.6rem auto 0.85rem' }} />
+        <div style={{ fontSize: 'clamp(1rem, 4.2vw, 1.6rem)', letterSpacing: '0.2em', color: '#7a5f70', textTransform: 'uppercase' }}>
           Bilgi Yarışması
         </div>
       </div>
