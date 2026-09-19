@@ -107,3 +107,55 @@ export function vibrateWrong() {
     // desteklenmiyorsa sessizce geç
   }
 }
+
+// Yarışma başlarken (ilk soru gelince) çalınan kısa, heyecan verici
+// bir "başlıyoruz" müzik motifi — yükselen 4 nota.
+export function playStartJingle() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const now = ctx.currentTime;
+    const notes = [392, 494, 587, 784]; // Sol-Si-Re-Sol, yükselen ve umut verici
+    notes.forEach((freq, i) => {
+      const start = now + i * 0.12;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.3, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.35);
+    });
+  } catch {
+    // sessizce geç
+  }
+}
+
+// Ekranlar arası geçişte (yeni soru gelince) çalınan kısa "whoosh" sesi.
+export function playWhooshSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const duration = 0.35;
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(200, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + duration);
+    const gain = ctx.createGain();
+    gain.gain.value = 0.3;
+    noise.connect(filter).connect(gain).connect(ctx.destination);
+    noise.start();
+    noise.stop(ctx.currentTime + duration);
+  } catch {
+    // sessizce geç
+  }
+}

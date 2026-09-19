@@ -3,12 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useCompetition } from '../hooks/useCompetition';
 import { useMyParticipant } from '../hooks/useMyParticipant';
+import { useProfile } from '../hooks/useProfile';
+import ShareCard from '../components/ShareCard';
 import { useCurrentQuestion } from '../hooks/useCurrentQuestion';
-import { playGongSound, playTickSound, playCountdownTick, vibrateCorrect, vibrateWrong } from '../lib/sound';
+import { playGongSound, playTickSound, playCountdownTick, vibrateCorrect, vibrateWrong, playStartJingle, playWhooshSound } from '../lib/sound';
 import { burstConfetti } from '../lib/confetti';
 import DaisyCountdown from '../components/DaisyCountdown';
 import FloatingParticles from '../components/FloatingParticles';
 import ReactionBar from '../components/ReactionBar';
+import SurvivorsGrid from '../components/SurvivorsGrid';
 
 const REVEAL_DURATION_SECONDS = 20;
 
@@ -21,6 +24,7 @@ export default function CompetitionRoom() {
   const navigate = useNavigate();
   const { competition, loading: loadingCompetition } = useCompetition(competitionId);
   const { participant, loading: loadingParticipant } = useMyParticipant(competitionId);
+  const { profile } = useProfile();
   const question = useCurrentQuestion(competition?.current_question_id);
 
   const [secondsLeft, setSecondsLeft] = useState(null);
@@ -38,6 +42,9 @@ export default function CompetitionRoom() {
   const revealFetchedForQuestion = useRef(null);
   const gongPlayedForQuestion = useRef(null);
   const confettiPlayedForQuestion = useRef(null);
+  const survivorsTotalRef = useRef(null);
+  const jinglePlayedRef = useRef(false);
+  const whooshPlayedForQuestion = useRef(null);
   const correctRowRef = useRef(null);
   const [results, setResults] = useState(null);
   const finishedConfettiPlayed = useRef(false);
@@ -48,7 +55,26 @@ export default function CompetitionRoom() {
     if (!competitionId) return;
     supabase
       .rpc('get_active_participant_count', { p_competition_id: competitionId })
-      .then(({ data }) => setActiveCount(data));
+      .then(({ data }) => {
+        setActiveCount(data);
+        // "Hâlâ ayaktakiler" ızgarası için başlangıç toplamını bir kez yakala
+        // (sadece daha büyükse güncelle — sayı zaten hep azalır).
+        if (data != null && (survivorsTotalRef.current == null || data > survivorsTotalRef.current)) {
+          survivorsTotalRef.current = data;
+        }
+      });
+
+    // Yeni soruya geçişte kısa bir "whoosh" sesi — ilk soruda bunun
+    // yerine daha büyük bir "başlıyoruz" müziği çalıyoruz.
+    if (question?.id) {
+      if (question.order_index === 1 && !jinglePlayedRef.current) {
+        jinglePlayedRef.current = true;
+        playStartJingle();
+      } else if (question.order_index > 1 && whooshPlayedForQuestion.current !== question.id) {
+        whooshPlayedForQuestion.current = question.id;
+        playWhooshSound();
+      }
+    }
   }, [competitionId, question?.id]);
 
   // Yarışma henüz başlamadıysa (scheduled), kota durumunu göstermek
@@ -347,7 +373,7 @@ export default function CompetitionRoom() {
               const medal = r.rank === 1 ? '👑' : r.rank === 2 ? '🥈' : '🥉';
               return (
                 <div
-                  className="results-row podium-row"
+                  className={`results-row podium-row ${r.rank === 1 ? 'is-winner' : ''}`}
                   key={r.rank}
                   style={{ animationDelay: `${(3 - r.rank) * 0.5}s` }}
                 >
@@ -359,6 +385,19 @@ export default function CompetitionRoom() {
             })}
           </div>
         )}
+
+        {results && results.length > 0 && profile && (() => {
+          const myResult = results.find((r) => r.full_name === profile.full_name);
+          if (!myResult) return null;
+          return (
+            <ShareCard
+              rank={myResult.rank}
+              fullName={myResult.full_name}
+              prize={myResult.prize}
+              competitionTitle={competition.title}
+            />
+          );
+        })()}
       </div>
     );
   }
@@ -398,10 +437,12 @@ export default function CompetitionRoom() {
     const voteFor = (opt) => revealData?.find((r) => r.option_letter === opt)?.vote_count ?? 0;
     const totalVotes = revealData?.reduce((s, r) => s + Number(r.vote_count), 0) ?? 0;
     const correctOption = revealData?.[0]?.correct_option;
+    const isCritical = activeCount != null && activeCount <= 5 && activeCount > 1;
 
     return (
-      <div className={`stage ${shakeActive ? 'shake-wrong' : ''}`} style={{ position: 'relative' }}>
+      <div className={`stage ${shakeActive ? 'shake-wrong' : ''} ${isCritical ? 'critical-mode' : ''}`} style={{ position: 'relative' }}>
         <FloatingParticles />
+        {isCritical && <div className="critical-badge">🔥 FİNAL!</div>}
         <div className="room-topbar" style={{ position: 'relative', zIndex: 1 }}>
           <div className="room-topbar-item room-topbar-item-big">
             <span className="label">Soru</span>
@@ -412,6 +453,8 @@ export default function CompetitionRoom() {
             <span className="value">{activeCount ?? '...'}</span>
           </div>
         </div>
+
+        <SurvivorsGrid total={survivorsTotalRef.current} alive={activeCount} />
 
         <DaisyCountdown
           total={isRevealing ? REVEAL_DURATION_SECONDS : (question.time_limit_seconds || 15)}

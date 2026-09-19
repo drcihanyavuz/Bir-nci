@@ -996,3 +996,53 @@ textarea:focus-visible {
   15%  { transform: translateY(-20px) scale(1.1); opacity: 1; }
   100% { transform: translateY(-160px) scale(1); opacity: 0; }
 }
+
+/* ---- Kritik an modu (5 ve altı katılımcı kalınca) ---- */
+.critical-mode::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  box-shadow: inset 0 0 70px rgba(220, 38, 38, 0.55);
+  animation: critical-pulse 1.3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+@keyframes critical-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.critical-badge {
+  display: inline-block;
+  background: #d21f1f;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  animation: critical-pulse 1.3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.5rem;
+}
+
+/* ---- Birinciyi görsel olarak öne çıkar ---- */
+.podium-row.is-winner {
+  background: linear-gradient(90deg, rgba(255,213,0,0.35), rgba(255,213,0,0.1));
+  border: 1px solid #e0b800;
+  font-size: 1.15rem;
+  position: relative;
+  overflow: hidden;
+}
+.podium-row.is-winner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+  animation: winner-shimmer 2.2s ease-in-out infinite;
+}
+@keyframes winner-shimmer {
+  0% { left: -60%; }
+  100% { left: 130%; }
+}
