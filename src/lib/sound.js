@@ -64,3 +64,46 @@ export function playGongSound() {
     // Ses çalınamazsa sessizce geç
   }
 }
+
+// Şık seçildiğinde çalınan hafif "tık" sesi.
+export function playTickSound(frequency = 700) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = frequency;
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  } catch {
+    // sessizce geç
+  }
+}
+
+// Son 3 saniyede çalınan, saniye azaldıkça perdesi yükselen "tik" sesi
+// (gerilim hissi için).
+export function playCountdownTick(secondsLeft) {
+  const freq = secondsLeft === 3 ? 500 : secondsLeft === 2 ? 620 : 760;
+  playTickSound(freq);
+}
+
+// Telefon titreşimi — doğru/yanlış cevaba göre farklı desen.
+// iOS Safari bu API'yi desteklemiyor, orada sessizce hiçbir şey olmaz.
+export function vibrateCorrect() {
+  try {
+    navigator.vibrate?.(120);
+  } catch {
+    // desteklenmiyorsa sessizce geç
+  }
+}
+
+export function vibrateWrong() {
+  try {
+    navigator.vibrate?.([60, 50, 60, 50, 60]);
+  } catch {
+    // desteklenmiyorsa sessizce geç
+  }
+}

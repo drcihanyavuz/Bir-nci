@@ -4,9 +4,11 @@ import { supabase } from '../lib/supabaseClient';
 import { useCompetition } from '../hooks/useCompetition';
 import { useMyParticipant } from '../hooks/useMyParticipant';
 import { useCurrentQuestion } from '../hooks/useCurrentQuestion';
-import { playGongSound } from '../lib/sound';
+import { playGongSound, playTickSound, playCountdownTick, vibrateCorrect, vibrateWrong } from '../lib/sound';
 import { burstConfetti } from '../lib/confetti';
 import DaisyCountdown from '../components/DaisyCountdown';
+import FloatingParticles from '../components/FloatingParticles';
+import ReactionBar from '../components/ReactionBar';
 
 const REVEAL_DURATION_SECONDS = 20;
 
@@ -27,6 +29,7 @@ export default function CompetitionRoom() {
   const [answerError, setAnswerError] = useState('');
   const [activeCount, setActiveCount] = useState(null);
   const [revealData, setRevealData] = useState(null); // [{option_letter, vote_count, correct_option}]
+  const [shakeActive, setShakeActive] = useState(false);
   const [revealCountdown, setRevealCountdown] = useState(null);
 
   const advanceInFlight = useRef(false);
@@ -138,6 +141,10 @@ export default function CompetitionRoom() {
       const remaining = Math.max(0, Math.round((endsAt - Date.now()) / 1000));
       setSecondsLeft(remaining);
 
+      if (remaining >= 1 && remaining <= 3) {
+        playCountdownTick(remaining);
+      }
+
       if (remaining === 0) {
         // Süre dolar dolmaz gong sesi (bir kez)
         if (gongPlayedForQuestion.current !== question.id) {
@@ -184,6 +191,10 @@ export default function CompetitionRoom() {
   useEffect(() => {
     if (revealData && confettiPlayedForQuestion.current !== question?.id) {
       confettiPlayedForQuestion.current = question?.id;
+
+      const correctOption = revealData?.[0]?.correct_option;
+      const wasCorrect = selectedOption && correctOption && selectedOption === correctOption;
+
       requestAnimationFrame(() => {
         const rect = correctRowRef.current?.getBoundingClientRect();
         if (rect) {
@@ -192,6 +203,16 @@ export default function CompetitionRoom() {
           burstConfetti();
         }
       });
+
+      if (selectedOption) {
+        if (wasCorrect) {
+          vibrateCorrect();
+        } else {
+          vibrateWrong();
+          setShakeActive(true);
+          setTimeout(() => setShakeActive(false), 550);
+        }
+      }
     }
   }, [revealData, question?.id]);
 
@@ -217,6 +238,7 @@ export default function CompetitionRoom() {
 
   const handleAnswer = async (option) => {
     if (hasAnswered || secondsLeft === 0) return;
+    playTickSound();
     setSelectedOption(option);
     setHasAnswered(true);
     setAnswerError('');
@@ -324,7 +346,11 @@ export default function CompetitionRoom() {
             {results.map((r) => {
               const medal = r.rank === 1 ? '👑' : r.rank === 2 ? '🥈' : '🥉';
               return (
-                <div className="results-row" key={r.rank}>
+                <div
+                  className="results-row podium-row"
+                  key={r.rank}
+                  style={{ animationDelay: `${(3 - r.rank) * 0.5}s` }}
+                >
                   <span className="rank-badge">{medal} {r.rank}.</span>
                   <span style={{ flex: 1 }}>{r.full_name}</span>
                   {r.prize && <span className="gold-text">{r.prize}</span>}
@@ -374,8 +400,9 @@ export default function CompetitionRoom() {
     const correctOption = revealData?.[0]?.correct_option;
 
     return (
-      <div className="stage">
-        <div className="room-topbar">
+      <div className={`stage ${shakeActive ? 'shake-wrong' : ''}`} style={{ position: 'relative' }}>
+        <FloatingParticles />
+        <div className="room-topbar" style={{ position: 'relative', zIndex: 1 }}>
           <div className="room-topbar-item room-topbar-item-big">
             <span className="label">Soru</span>
             <span className="value">{question.order_index}</span>
@@ -452,6 +479,8 @@ export default function CompetitionRoom() {
           <p className="status-banner is-success">Cevabınız alındı, süre doluyor...</p>
         )}
         {answerError && <p className="status-banner is-error">{answerError}</p>}
+
+        <ReactionBar />
       </div>
     );
   }

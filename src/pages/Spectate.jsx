@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabaseClient';
 import { useCompetition } from '../hooks/useCompetition';
 import { useSpectatorQuestion } from '../hooks/useSpectatorQuestion';
 import DaisyCountdown from '../components/DaisyCountdown';
+import FloatingParticles from '../components/FloatingParticles';
+import ReactionBar from '../components/ReactionBar';
 
 function isVideoUrl(url) {
   return /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url || '');
@@ -101,7 +103,8 @@ export default function Spectate() {
     const correctOption = revealData?.[0]?.correct_option;
 
     return (
-      <div className="stage">
+      <div className="stage" style={{ position: 'relative' }}>
+        <FloatingParticles />
         <p className="muted">{competition.title} · İzleyici modu</p>
 
         <div className="room-topbar">
@@ -152,6 +155,8 @@ export default function Spectate() {
             );
           })}
         </div>
+
+        <ReactionBar />
       </div>
     );
   }
