@@ -1,13 +1,30 @@
+// Tüm ses efektleri TEK bir paylaşılan AudioContext üzerinden çalışır.
+// Önceki sürümde her ses çalma çağrısı kendi AudioContext'ini
+// oluşturup hiç kapatmıyordu — bu, uzun bir yarışmada (özellikle son
+// 3 saniye "tik" sesi her soruda tekrarlandığı için) onlarca açık
+// ses motoru birikmesine ve genel bir yavaşlamaya yol açıyordu.
+// Artık tek motor oluşturulup tekrar tekrar kullanılıyor.
+let sharedCtx = null;
+
+function getAudioContext() {
+  if (!sharedCtx) {
+    sharedCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  // Tarayıcılar, kullanıcı etkileşimi olmadan başlayan ses motorlarını
+  // otomatik "askıya" alabiliyor — her çalmadan önce devam ettirmeyi deneriz.
+  if (sharedCtx.state === 'suspended') {
+    sharedCtx.resume().catch(() => {});
+  }
+  return sharedCtx;
+}
+
 // Gerçek bir alkış ses dosyamız olmadığı için, Web Audio API ile
 // basit ama duyulabilir bir "başarı/alkış" sesi sentezliyoruz.
-// İleride gerçek bir alkış kaydı (mp3) eklenirse bu fonksiyon
-// kolayca değiştirilebilir.
 export function playApplauseSound() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const duration = 0.6;
 
-    // Kısa "gürültü patlaması" (alkış hissi) + birkaç kısa "tık" darbesi
     const bufferSize = ctx.sampleRate * duration;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -35,15 +52,13 @@ export function playApplauseSound() {
   }
 }
 
-// Süre dolduğunda çalınan "gong" sesi — gerçek bir gong kaydımız
-// olmadığı için, alçak frekanslı, uzun sönümlü bir ton karışımıyla
-// sentezliyoruz (temel frekans + birkaç harmonik).
+// Süre dolduğunda çalınan "gong" sesi.
 export function playGongSound() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const now = ctx.currentTime;
     const duration = 2.2;
-    const fundamentals = [110, 174, 233, 275]; // gong benzeri, uyumsuz harmonikler
+    const fundamentals = [110, 174, 233, 275];
 
     fundamentals.forEach((freq, i) => {
       const osc = ctx.createOscillator();
@@ -68,7 +83,7 @@ export function playGongSound() {
 // Şık seçildiğinde çalınan hafif "tık" sesi.
 export function playTickSound(frequency = 700) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = 'sine';
@@ -83,15 +98,13 @@ export function playTickSound(frequency = 700) {
   }
 }
 
-// Son 3 saniyede çalınan, saniye azaldıkça perdesi yükselen "tik" sesi
-// (gerilim hissi için).
+// Son 3 saniyede çalınan, saniye azaldıkça perdesi yükselen "tik" sesi.
 export function playCountdownTick(secondsLeft) {
   const freq = secondsLeft === 3 ? 500 : secondsLeft === 2 ? 620 : 760;
   playTickSound(freq);
 }
 
 // Telefon titreşimi — doğru/yanlış cevaba göre farklı desen.
-// iOS Safari bu API'yi desteklemiyor, orada sessizce hiçbir şey olmaz.
 export function vibrateCorrect() {
   try {
     navigator.vibrate?.(120);
@@ -108,13 +121,12 @@ export function vibrateWrong() {
   }
 }
 
-// Yarışma başlarken (ilk soru gelince) çalınan kısa, heyecan verici
-// bir "başlıyoruz" müzik motifi — yükselen 4 nota.
+// Yarışma başlarken (ilk soru gelince) çalınan kısa "başlıyoruz" motifi.
 export function playStartJingle() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const now = ctx.currentTime;
-    const notes = [392, 494, 587, 784]; // Sol-Si-Re-Sol, yükselen ve umut verici
+    const notes = [392, 494, 587, 784];
     notes.forEach((freq, i) => {
       const start = now + i * 0.12;
       const osc = ctx.createOscillator();
@@ -133,10 +145,10 @@ export function playStartJingle() {
   }
 }
 
-// Ekranlar arası geçişte (yeni soru gelince) çalınan kısa "whoosh" sesi.
+// Ekranlar arası geçişte çalınan kısa "whoosh" sesi.
 export function playWhooshSound() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
     const duration = 0.35;
     const bufferSize = ctx.sampleRate * duration;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
